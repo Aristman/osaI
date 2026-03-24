@@ -10,7 +10,7 @@
 // ---------------------------------------------------------------------------
 
 /** Supported channel types */
-export type ChannelType = 'cli' | 'ws' | 'telegram' | 'api';
+export type ChannelType = 'cli' | 'ws' | 'telegram' | 'whatsapp' | 'api';
 
 /** Channel status */
 export type ChannelStatus = 'disconnected' | 'connecting' | 'connected' | 'error';

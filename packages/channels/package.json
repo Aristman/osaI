@@ -1,0 +1,34 @@
+{
+  "name": "@osai/channels",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "ci": "tsc --noEmit && vitest run && tsup"
+  },
+  "dependencies": {
+    "@osai/types": "0.0.1",
+    "@osai/gateway": "0.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsup": "^8.4.0",
+    "vitest": "^4.1.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
