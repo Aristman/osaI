@@ -1,11 +1,5 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
-import type {
-  Severity,
-  OsaIError,
-  ModelError,
-  SandboxError,
-  SkillError,
-} from '../src/errors.js';
+import type { Severity, OsaIError, ModelError, SandboxError, SkillError } from '../src/errors.js';
 
 describe('Error Types', () => {
   it('T002-03: All error types are exported', () => {
@@ -20,12 +14,7 @@ describe('Error Types', () => {
     const medium: Severity = 'MEDIUM';
     const high: Severity = 'HIGH';
     const critical: Severity = 'CRITICAL';
-    expect([low, medium, high, critical]).toEqual([
-      'LOW',
-      'MEDIUM',
-      'HIGH',
-      'CRITICAL',
-    ]);
+    expect([low, medium, high, critical]).toEqual(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']);
   });
 
   it('OsaIError has code, message, severity', () => {

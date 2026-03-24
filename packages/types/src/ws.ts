@@ -104,11 +104,7 @@ export interface EventMessage {
 // ---------------------------------------------------------------------------
 
 /** Union of all inbound WS message types (client -> gateway) */
-export type WsInboundMessage =
-  | ClientMessage
-  | ClientCommand
-  | PermissionResponse
-  | ClientSubscribe;
+export type WsInboundMessage = ClientMessage | ClientCommand | PermissionResponse | ClientSubscribe;
 
 /** Union of all outbound WS message types (gateway -> client) */
 export type WsOutboundMessage =

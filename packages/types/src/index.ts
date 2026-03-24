@@ -25,13 +25,7 @@ export type {
 } from './ws.js';
 
 // Error Types
-export type {
-  Severity,
-  OsaIError,
-  ModelError,
-  SandboxError,
-  SkillError,
-} from './errors.js';
+export type { Severity, OsaIError, ModelError, SandboxError, SkillError } from './errors.js';
 
 // Domain Interfaces
 export type {

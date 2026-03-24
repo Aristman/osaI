@@ -33,12 +33,7 @@ describe('Session Types', () => {
     const write: ToolCategory = 'write';
     const execute: ToolCategory = 'execute';
     const system: ToolCategory = 'system';
-    expect([read, write, execute, system]).toEqual([
-      'read',
-      'write',
-      'execute',
-      'system',
-    ]);
+    expect([read, write, execute, system]).toEqual(['read', 'write', 'execute', 'system']);
   });
 
   it('RiskLevel has exactly 3 values', () => {
