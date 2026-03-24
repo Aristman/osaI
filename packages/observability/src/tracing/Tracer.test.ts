@@ -48,7 +48,7 @@ describe('Tracer', () => {
   describe('endSpan', () => {
     it('should end a span with ok status', () => {
       const span = tracer.startSpan('operation');
-      const completed = tracer.endSpan(span.id);
+      const completed = tracer.endSpan(span.id)!;
 
       expect(completed.endTime).toBeDefined();
       expect(completed.duration).toBeDefined();
@@ -58,14 +58,14 @@ describe('Tracer', () => {
 
     it('should end a span with error status', () => {
       const span = tracer.startSpan('operation');
-      const completed = tracer.endSpan(span.id, 'error');
+      const completed = tracer.endSpan(span.id, 'error')!;
 
       expect(completed.status).toBe('error');
     });
 
     it('should merge additional attributes on end', () => {
       const span = tracer.startSpan('operation', undefined, { step: 1 });
-      const completed = tracer.endSpan(span.id, 'ok', { result: 'success' });
+      const completed = tracer.endSpan(span.id, 'ok', { result: 'success' })!;
 
       expect(completed.attributes).toEqual({ step: 1, result: 'success' });
     });

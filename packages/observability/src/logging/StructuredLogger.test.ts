@@ -12,7 +12,9 @@ describe('StructuredLogger', () => {
     it('should create log entries with correct levels', () => {
       const written: Array<{ entry: Record<string, unknown>; level: string }> = [];
       vi.spyOn(logger as any, 'write').mockImplementation(
-        (entry: Record<string, unknown>, level: string) => {
+        (...args: unknown[]) => {
+          const entry = args[0] as Record<string, unknown>;
+          const level = args[1] as string;
           written.push({ entry, level });
         },
       );
@@ -35,7 +37,7 @@ describe('StructuredLogger', () => {
   describe('JSON format', () => {
     it('should output structured JSON entries', () => {
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -54,7 +56,7 @@ describe('StructuredLogger', () => {
     it('should output text format when jsonFormat is false', () => {
       const textLogger = new StructuredLogger({ level: 'info', jsonFormat: false });
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -72,7 +74,7 @@ describe('StructuredLogger', () => {
     it('should respect minimum log level', () => {
       const warnLogger = new StructuredLogger({ level: 'warn', jsonFormat: true });
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -94,7 +96,7 @@ describe('StructuredLogger', () => {
   describe('data payload', () => {
     it('should include data in log entries', () => {
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -118,7 +120,7 @@ describe('StructuredLogger', () => {
 
     it('should include correlation ID in log entries when set', () => {
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -139,7 +141,7 @@ describe('StructuredLogger', () => {
         correlationIds: false,
       });
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -162,7 +164,7 @@ describe('StructuredLogger', () => {
 
     it('should include sessionId in session log entries', () => {
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -180,7 +182,7 @@ describe('StructuredLogger', () => {
 
     it('should propagate correlation ID to session logger', () => {
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });
@@ -198,7 +200,7 @@ describe('StructuredLogger', () => {
 
     it('should support all log levels on session logger', () => {
       const output: string[] = [];
-      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: string) => {
+      const consoleSpy = vi.spyOn(process.stdout, 'write').mockImplementation((data: any) => {
         output.push(data);
         return true;
       });

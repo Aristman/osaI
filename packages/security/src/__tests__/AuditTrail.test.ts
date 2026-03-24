@@ -4,7 +4,6 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AuditTrail } from '../audit/AuditTrail.js';
-import type { AuditFilter } from '../audit/types.js';
 
 describe('AuditTrail', () => {
   let trail: AuditTrail;

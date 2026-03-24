@@ -69,7 +69,7 @@ describe('Security Integration', () => {
         abort: false,
       };
 
-      const result = await hook.handler(context);
+      const result = (await hook.handler(context))!;
       expect(result.abort).toBe(true);
       expect(result.data['permissionDenied']).toBe(true);
 
@@ -92,7 +92,7 @@ describe('Security Integration', () => {
         abort: false,
       };
 
-      const result = await hook.handler(context);
+      const result = (await hook.handler(context))!;
       expect(result.abort).toBe(true);
       expect(result.data['permissionPending']).toBe(true);
 
@@ -118,7 +118,7 @@ describe('Security Integration', () => {
         abort: false,
       };
 
-      const result = await hook.handler(context);
+      const result = (await hook.handler(context))!;
       expect(result.abort).toBe(true);
       expect(result.data['permissionPending']).toBe(true);
 
