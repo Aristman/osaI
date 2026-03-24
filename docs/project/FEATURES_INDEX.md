@@ -305,6 +305,9 @@ Level 6:  F-013 Web Dashboard (зависит от F-002, параллельно
 - **Dependencies:** F-004, F-005
 - **Dependency Level:** 3
 - **Priority:** Must Have (MVP) для Permissions; Should Have (V1) для Docker Sandbox
+- **Status:** COMPLETED
+- **Completed:** 2026-03-25
+- **Final Score:** 9.40/10
 - **Estimated Tasks:** 6 (Backend: 3, Security: 2, Tests: 1)
 - **Task Breakdown:**
   - Permission Manager (category-based checks, permission_request/response flow, desktop notifications)
@@ -326,6 +329,9 @@ Level 6:  F-013 Web Dashboard (зависит от F-002, параллельно
 - **Dependencies:** F-002, F-004
 - **Dependency Level:** 4
 - **Priority:** Should Have (V1)
+- **Status:** COMPLETED
+- **Completed:** 2026-03-25
+- **Final Score:** 9.40/10
 - **Estimated Tasks:** 7 (Backend: 3, Integration: 2, API: 1, Tests: 1)
 - **Task Breakdown:**
   - OpenTelemetry SDK setup (traces, resource attributes, span hierarchy)
