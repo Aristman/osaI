@@ -49,7 +49,6 @@ describe('TelegramChannel', () => {
     it('should transition to connecting then connected', async () => {
       const statusTransitions: string[] = [];
 
-      const originalSetStatus = channel.getStatus.bind(channel);
       let previousStatus = '';
       const checkTransition = () => {
         const current = channel.getStatus();
