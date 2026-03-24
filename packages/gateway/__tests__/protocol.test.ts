@@ -15,7 +15,8 @@ import {
   buildEventMessage,
   MessageRouter,
 } from '../src/protocol/protocol.js';
-import type { ClientInfo, WsOutboundMessage } from '../src/index.js';
+import type { ClientInfo } from '../src/index.js';
+import type { ClientMessage } from '@osai/types';
 
 // ---------------------------------------------------------------------------
 // Test fixtures
@@ -82,7 +83,7 @@ describe('parseMessage', () => {
 
     if (result.success) {
       expect(result.message.type).toBe('message');
-      expect(result.message.session_id).toBe('s1');
+      expect((result.message as ClientMessage).session_id).toBe('s1');
     } else {
       expect.unreachable('Expected success');
     }
@@ -368,14 +369,15 @@ describe('MessageRouter', () => {
   it('should return multiple outbound messages from handler', () => {
     const router = new MessageRouter();
     router.register('message', (msg) => {
+      const clientMsg = msg as ClientMessage;
       return [
-        buildStatusMessage(msg.session_id, 'received'),
-        buildEventMessage(msg.session_id, 'user_message', { content: msg.content }),
+        buildStatusMessage(clientMsg.session_id, 'received'),
+        buildEventMessage(clientMsg.session_id, 'user_message', { content: clientMsg.content }),
       ];
     });
 
     const outbound = router.route(
-      { type: 'message', session_id: 's1', content: 'hello' },
+      { type: 'message', session_id: 's1', content: 'hello' } as ClientMessage,
       createMockClient(),
     );
 
@@ -394,7 +396,7 @@ describe('Streaming support', () => {
     const chunks = [
       buildToolStreamMessage('s1', 'shell', 'execute', { output: 'line1\n' }, 33),
       buildToolStreamMessage('s1', 'shell', 'execute', { output: 'line2\n' }, 66),
-      buildToolStreamMessage('s1', 'shell', 'execute', { output: 'line3' }, 100, true),
+      buildToolStreamMessage('s1', 'shell', 'execute', { output: 'line3', final: true }, 100),
     ];
 
     for (const chunk of chunks) {

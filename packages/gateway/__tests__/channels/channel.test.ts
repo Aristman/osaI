@@ -25,7 +25,6 @@ function createMockChannel(
   name: string = id,
 ): IChannelHandler {
   let status: IChannelHandler['status'] = 'disconnected';
-  let handler: ((msg: OutboundMessage) => void) | null = null;
 
   return {
     id,
@@ -40,13 +39,13 @@ function createMockChannel(
     disconnect: vi.fn(async () => {
       status = 'disconnected';
     }),
-    send: vi.fn((msg: OutboundMessage) => {
+    send: vi.fn((_msg: OutboundMessage) => {
       if (status !== 'connected') {
         throw new Error(`Channel '${id}' is not connected`);
       }
     }),
-    onMessage: vi.fn((h) => {
-      handler = h;
+    onMessage: vi.fn((_h) => {
+      // no-op for mock
     }),
     getStatus: vi.fn(() => status),
   };

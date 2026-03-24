@@ -15,16 +15,10 @@ import { tmpdir } from 'node:os';
 import { rmSync } from 'node:fs';
 import { SessionPersistence } from '../../src/session/persistence.js';
 import { Session } from '../../src/session/router.js';
-import type { SessionData } from '../../src/session/router.js';
 
 // ---------------------------------------------------------------------------
 // Test helpers
 // ---------------------------------------------------------------------------
-
-function createTestDb(): DatabaseType {
-  const dbPath = join(tmpdir(), `osai-test-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.db`);
-  return Database(dbPath) as unknown as DatabaseType;
-}
 
 function createTestSession(
   id: string,

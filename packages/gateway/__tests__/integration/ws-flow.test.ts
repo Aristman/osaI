@@ -12,7 +12,7 @@
  * connections and (for persistence tests) a real SQLite database.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import type { Database as DatabaseType } from 'better-sqlite3';
 import { join } from 'node:path';
@@ -30,8 +30,8 @@ import {
   buildPermissionRequest,
   MessageRouter,
 } from '../../src/protocol/protocol.js';
-import type { WsInboundMessage, ClientMessage } from '@osai/types';
-import { Session, SessionRouter } from '../../src/session/router.js';
+import type { ClientMessage } from '@osai/types';
+import { SessionRouter } from '../../src/session/router.js';
 import { SessionPersistence } from '../../src/session/persistence.js';
 import { ChannelManager } from '../../src/channels/channel.js';
 import type { IChannelHandler, OutboundMessage } from '../../src/channels/channel.js';
@@ -69,8 +69,8 @@ async function startAndGetPort(server: GatewayServer): Promise<number> {
  */
 function createWiredMessageRouter(
   sessionRouter: SessionRouter,
-  channelManager: ChannelManager,
-  broadcastFn: (msg: string) => void,
+  _channelManager: ChannelManager,
+  _broadcastFn: (msg: string) => void,
 ): MessageRouter {
   const router = new MessageRouter();
 
@@ -152,8 +152,13 @@ function createWiredMessageRouter(
   return router;
 }
 
+interface TestChannelHandler extends IChannelHandler {
+  getSentMessages(): OutboundMessage[];
+  simulateIncoming(msg: OutboundMessage): void;
+}
+
 /** Create a mock IChannelHandler for integration tests */
-function createTestChannelHandler(id: string): IChannelHandler {
+function createTestChannelHandler(id: string): TestChannelHandler {
   let status: IChannelHandler['status'] = 'disconnected';
   const sentMessages: OutboundMessage[] = [];
   let handler: ((msg: OutboundMessage) => void) | null = null;

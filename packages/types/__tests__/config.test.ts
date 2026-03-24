@@ -4,7 +4,6 @@ import type {
   ModelConfig,
   GatewayConfig,
   SessionConfig,
-  SkillsConfig,
   SecurityConfig,
 } from '../src/config.js';
 
@@ -34,7 +33,7 @@ describe('Config Types', () => {
       ],
     };
     expect(config.fallbacks).toHaveLength(1);
-    expect(config.fallbacks![0].provider).toBe('openai');
+    expect(config.fallbacks?.[0]?.provider).toBe('openai');
   });
 
   it('GatewayConfig has host and port', () => {
