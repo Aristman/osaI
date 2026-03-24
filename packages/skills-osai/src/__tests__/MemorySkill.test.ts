@@ -114,7 +114,7 @@ describe('MemorySkill', () => {
   describe('remember', () => {
     it('TC-T002-001: should store memory and return fact ID', async () => {
       const { executors } = createMemorySkill(manager);
-      const result = await executors['remember'](
+      const result = await executors['remember']!(
         { content: 'User prefers dark theme', category: 'preference', tags: ['ui'] },
         defaultContext,
       );
@@ -134,7 +134,7 @@ describe('MemorySkill', () => {
 
     it('should default category to fact when not provided', async () => {
       const { executors } = createMemorySkill(manager);
-      await executors['remember'](
+      await executors['remember']!(
         { content: 'Some fact' },
         defaultContext,
       );
@@ -148,7 +148,7 @@ describe('MemorySkill', () => {
 
     it('TC-T002-005: should reject invalid category', async () => {
       const { executors } = createMemorySkill(manager);
-      const result = await executors['remember'](
+      const result = await executors['remember']!(
         { content: 'Test', category: 'INVALID_CATEGORY' },
         defaultContext,
       );
@@ -159,7 +159,7 @@ describe('MemorySkill', () => {
 
     it('should fail when content is missing', async () => {
       const { executors } = createMemorySkill(manager);
-      const result = await executors['remember']({}, defaultContext);
+      const result = await executors['remember']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('content');
@@ -171,7 +171,7 @@ describe('MemorySkill', () => {
       });
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['remember'](
+      const result = await executors['remember']!(
         { content: 'Test' },
         defaultContext,
       );
@@ -202,7 +202,7 @@ describe('MemorySkill', () => {
       vi.mocked(manager.recall).mockResolvedValue(mockRagResult);
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['recall'](
+      const result = await executors['recall']!(
         { query: 'theme preferences', top_k: 5 },
         defaultContext,
       );
@@ -219,7 +219,7 @@ describe('MemorySkill', () => {
 
     it('should fail when query is missing', async () => {
       const { executors } = createMemorySkill(manager);
-      const result = await executors['recall']({}, defaultContext);
+      const result = await executors['recall']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('query');
@@ -234,7 +234,7 @@ describe('MemorySkill', () => {
       });
 
       const { executors } = createMemorySkill(manager);
-      await executors['recall']({ query: 'test', top_k: 100 }, defaultContext);
+      await executors['recall']!({ query: 'test', top_k: 100 }, defaultContext);
 
       expect(manager.recall).toHaveBeenCalledWith(
         'test-session-001',
@@ -249,7 +249,7 @@ describe('MemorySkill', () => {
       );
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['recall'](
+      const result = await executors['recall']!(
         { query: 'test' },
         defaultContext,
       );
@@ -264,7 +264,7 @@ describe('MemorySkill', () => {
       vi.mocked(manager.forget).mockResolvedValue(true);
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['forget'](
+      const result = await executors['forget']!(
         { memory_id: 'mem_12345' },
         defaultContext,
       );
@@ -277,7 +277,7 @@ describe('MemorySkill', () => {
       vi.mocked(manager.forget).mockResolvedValue(false);
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['forget'](
+      const result = await executors['forget']!(
         { memory_id: 'nonexistent' },
         defaultContext,
       );
@@ -288,7 +288,7 @@ describe('MemorySkill', () => {
 
     it('should fail when memory_id is missing', async () => {
       const { executors } = createMemorySkill(manager);
-      const result = await executors['forget']({}, defaultContext);
+      const result = await executors['forget']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('memory_id');
@@ -317,7 +317,7 @@ describe('MemorySkill', () => {
       ]);
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['summarize_session'](
+      const result = await executors['summarize_session']!(
         { session_id: 'session_123' },
         defaultContext,
       );
@@ -332,7 +332,7 @@ describe('MemorySkill', () => {
       vi.mocked(shortTerm.getSessionMessages).mockReturnValue([]);
 
       const { executors } = createMemorySkill(manager);
-      await executors['summarize_session']({}, defaultContext);
+      await executors['summarize_session']!({}, defaultContext);
 
       expect(shortTerm.getSessionMessages).toHaveBeenCalledWith('test-session-001');
     });
@@ -341,7 +341,7 @@ describe('MemorySkill', () => {
       vi.mocked(shortTerm.getSessionMessages).mockReturnValue([]);
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['summarize_session']({}, defaultContext);
+      const result = await executors['summarize_session']!({}, defaultContext);
 
       expect(result.success).toBe(true);
       expect(result.metadata).toHaveProperty('message_count', 0);
@@ -353,7 +353,7 @@ describe('MemorySkill', () => {
       });
 
       const { executors } = createMemorySkill(manager);
-      const result = await executors['summarize_session']({}, defaultContext);
+      const result = await executors['summarize_session']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('DB error');

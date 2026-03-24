@@ -4,8 +4,8 @@
  * T-002 unit tests: connect, disconnect, send, events, reconnection
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { WebSocketServer, WebSocket } from 'ws';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { WebSocketServer } from 'ws';
 import http from 'node:http';
 import { GatewayClient } from '../src/lib/gateway-client.js';
 

@@ -103,7 +103,7 @@ describe('KnowledgeSkill', () => {
   describe('ingest_document', () => {
     it('TC-T003-001: should ingest document and return ID with chunks count', async () => {
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['ingest_document'](
+      const result = await executors['ingest_document']!(
         { content: 'Short document content.', source: '/docs/spec.md', title: 'Specification', tags: ['spec', 'osai'] },
         defaultContext,
       );
@@ -121,7 +121,7 @@ describe('KnowledgeSkill', () => {
       const longContent = 'A'.repeat(600) + '\n' + 'B'.repeat(600);
       vi.mocked(longTerm.addFact).mockReturnValue('fact_chunk');
 
-      await executors['ingest_document'](
+      await executors['ingest_document']!(
         { content: longContent, source: '/docs/large.md' },
         defaultContext,
       );
@@ -137,7 +137,7 @@ describe('KnowledgeSkill', () => {
       });
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['ingest_document'](
+      const result = await executors['ingest_document']!(
         { content: 'test content' },
         defaultContext,
       );
@@ -149,7 +149,7 @@ describe('KnowledgeSkill', () => {
 
     it('should fail when content is missing', async () => {
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['ingest_document']({}, defaultContext);
+      const result = await executors['ingest_document']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('content');
@@ -157,7 +157,7 @@ describe('KnowledgeSkill', () => {
 
     it('should use default source when not provided', async () => {
       const { executors } = createKnowledgeSkill(longTerm);
-      await executors['ingest_document'](
+      await executors['ingest_document']!(
         { content: 'test content' },
         defaultContext,
       );
@@ -171,7 +171,7 @@ describe('KnowledgeSkill', () => {
 
     it('should pass tags to facts', async () => {
       const { executors } = createKnowledgeSkill(longTerm);
-      await executors['ingest_document'](
+      await executors['ingest_document']!(
         { content: 'test', tags: ['spec', 'osai'] },
         defaultContext,
       );
@@ -189,7 +189,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.search).mockReturnValue([sampleFact]);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['query_knowledge'](
+      const result = await executors['query_knowledge']!(
         { query: 'architecture', top_k: 5 },
         defaultContext,
       );
@@ -207,7 +207,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.search).mockReturnValue([]);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      await executors['query_knowledge'](
+      await executors['query_knowledge']!(
         { query: 'test', category: 'knowledge' },
         defaultContext,
       );
@@ -222,7 +222,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.search).mockReturnValue([]);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      await executors['query_knowledge'](
+      await executors['query_knowledge']!(
         { query: 'test', top_k: 100 },
         defaultContext,
       );
@@ -235,7 +235,7 @@ describe('KnowledgeSkill', () => {
 
     it('should fail when query is missing', async () => {
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['query_knowledge']({}, defaultContext);
+      const result = await executors['query_knowledge']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('query');
@@ -247,7 +247,7 @@ describe('KnowledgeSkill', () => {
       });
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['query_knowledge'](
+      const result = await executors['query_knowledge']!(
         { query: 'test' },
         defaultContext,
       );
@@ -266,7 +266,7 @@ describe('KnowledgeSkill', () => {
       ]);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['list_sources']({}, defaultContext);
+      const result = await executors['list_sources']!({}, defaultContext);
 
       expect(result.success).toBe(true);
       expect(result.metadata).toHaveProperty('sources');
@@ -278,7 +278,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.search).mockReturnValue([sampleFact]);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      await executors['list_sources']({ tag: 'spec' }, defaultContext);
+      await executors['list_sources']!({ tag: 'spec' }, defaultContext);
 
       expect(longTerm.search).toHaveBeenCalledWith(
         '',
@@ -290,7 +290,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.search).mockReturnValue([]);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['list_sources']({}, defaultContext);
+      const result = await executors['list_sources']!({}, defaultContext);
 
       expect(result.success).toBe(true);
       const sources = (result.metadata as Record<string, unknown>)['sources'] as unknown[];
@@ -303,7 +303,7 @@ describe('KnowledgeSkill', () => {
       });
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['list_sources']({}, defaultContext);
+      const result = await executors['list_sources']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('List failed');
@@ -316,7 +316,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.deleteFact).mockReturnValue(true);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['remove_source'](
+      const result = await executors['remove_source']!(
         { document_id: 'doc_12345' },
         defaultContext,
       );
@@ -329,7 +329,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.getFact).mockReturnValue(undefined);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['remove_source'](
+      const result = await executors['remove_source']!(
         { document_id: 'nonexistent' },
         defaultContext,
       );
@@ -340,7 +340,7 @@ describe('KnowledgeSkill', () => {
 
     it('should fail when document_id is missing', async () => {
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['remove_source']({}, defaultContext);
+      const result = await executors['remove_source']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('document_id');
@@ -351,7 +351,7 @@ describe('KnowledgeSkill', () => {
       vi.mocked(longTerm.deleteFact).mockReturnValue(false);
 
       const { executors } = createKnowledgeSkill(longTerm);
-      const result = await executors['remove_source'](
+      const result = await executors['remove_source']!(
         { document_id: 'fact_001' },
         defaultContext,
       );

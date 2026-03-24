@@ -131,13 +131,11 @@ describe('Integration Tests', () => {
   let osManager: OsIntegrationManager;
   let memoryManager: MemoryManager;
   let longTerm: LongTermMemory;
-  let shortTerm: ShortTermMemory;
 
   beforeEach(() => {
     osManager = createMockOsManager();
     memoryManager = createMockMemoryManager();
     longTerm = memoryManager.getLongTerm();
-    shortTerm = memoryManager.getShortTerm();
     vi.clearAllMocks();
   });
 
@@ -146,7 +144,7 @@ describe('Integration Tests', () => {
       const { executors } = createMemorySkill(memoryManager);
 
       // Step 1: remember
-      const rememberResult = await executors['remember'](
+      const rememberResult = await executors['remember']!(
         { content: 'Test memory' },
         ctx,
       );
@@ -154,7 +152,7 @@ describe('Integration Tests', () => {
       expect(rememberResult.metadata).toHaveProperty('memory_id', 'fact_integration_001');
 
       // Step 2: recall
-      const recallResult = await executors['recall'](
+      const recallResult = await executors['recall']!(
         { query: 'Integration test' },
         ctx,
       );
@@ -162,7 +160,7 @@ describe('Integration Tests', () => {
       expect((recallResult.metadata as Record<string, unknown>)['total_facts']).toBe(1);
 
       // Step 3: forget
-      const forgetResult = await executors['forget'](
+      const forgetResult = await executors['forget']!(
         { memory_id: 'mem_001' },
         ctx,
       );
@@ -175,7 +173,7 @@ describe('Integration Tests', () => {
       const { executors } = createKnowledgeSkill(longTerm);
 
       // Step 1: ingest
-      const ingestResult = await executors['ingest_document'](
+      const ingestResult = await executors['ingest_document']!(
         { content: 'Test document content for integration.', source: '/test.md', tags: ['spec'] },
         ctx,
       );
@@ -184,7 +182,7 @@ describe('Integration Tests', () => {
       expect(ingestResult.metadata).toHaveProperty('chunks_count');
 
       // Step 2: query
-      const queryResult = await executors['query_knowledge'](
+      const queryResult = await executors['query_knowledge']!(
         { query: 'Integration test' },
         ctx,
       );
@@ -192,12 +190,12 @@ describe('Integration Tests', () => {
       expect(queryResult.metadata).toHaveProperty('results');
 
       // Step 3: list
-      const listResult = await executors['list_sources']({}, ctx);
+      const listResult = await executors['list_sources']!({}, ctx);
       expect(listResult.success).toBe(true);
       expect(listResult.metadata).toHaveProperty('sources');
 
       // Step 4: remove
-      const removeResult = await executors['remove_source'](
+      const removeResult = await executors['remove_source']!(
         { document_id: 'fact_integration_001' },
         ctx,
       );
@@ -210,7 +208,7 @@ describe('Integration Tests', () => {
       const { executors } = createOsIntegrationSkill(osManager);
 
       // Step 1: get_system_info
-      const sysInfoResult = await executors['get_system_info']({}, ctx);
+      const sysInfoResult = await executors['get_system_info']!({}, ctx);
       expect(sysInfoResult.success).toBe(true);
       expect(sysInfoResult.metadata).toHaveProperty('cpu');
       expect(sysInfoResult.metadata).toHaveProperty('memory');
@@ -218,7 +216,7 @@ describe('Integration Tests', () => {
       expect(sysInfoResult.metadata).toHaveProperty('os');
 
       // Step 2: show_notification
-      const notifResult = await executors['show_notification'](
+      const notifResult = await executors['show_notification']!(
         { title: 'Info', body: 'System check complete.' },
         ctx,
       );

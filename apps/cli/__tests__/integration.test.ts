@@ -4,12 +4,12 @@
  * T-007: full flow, permission flow, session lifecycle
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { WebSocketServer } from 'ws';
 import http from 'node:http';
 import { GatewayClient } from '../src/lib/gateway-client.js';
 import { SessionManager } from '../src/lib/session-manager.js';
-import { renderPermissionRequest, promptPermission } from '../src/lib/permission-prompt.js';
+import { renderPermissionRequest } from '../src/lib/permission-prompt.js';
 
 // ---------------------------------------------------------------------------
 // Helpers

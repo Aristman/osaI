@@ -117,8 +117,8 @@ describe('Hooks', () => {
 
       const result = await hook.handler(context);
 
-      expect(result.data.memory_context).toBeDefined();
-      expect((result.data.memory_context as RagResult).facts).toHaveLength(1);
+      expect(result!.data.memory_context).toBeDefined();
+      expect((result!.data.memory_context as RagResult).facts).toHaveLength(1);
       expect(memoryManager.recall).toHaveBeenCalledWith(
         'test-session-001',
         'test query',
@@ -132,7 +132,7 @@ describe('Hooks', () => {
 
       const result = await hook.handler(context);
 
-      expect(result.data.memory_context).toBeUndefined();
+      expect(result!.data.memory_context).toBeUndefined();
       expect(memoryManager.recall).not.toHaveBeenCalled();
     });
 
@@ -164,7 +164,7 @@ describe('Hooks', () => {
 
       const result = await hook.handler(context);
 
-      expect(result.data.extracted_fact_id).toBe('fact_hook');
+      expect(result!.data.extracted_fact_id).toBe('fact_hook');
       const longTerm = memoryManager.getLongTerm();
       expect(longTerm.addFact).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -181,7 +181,7 @@ describe('Hooks', () => {
 
       const result = await hook.handler(context);
 
-      expect(result.data.extracted_fact_id).toBeUndefined();
+      expect(result!.data.extracted_fact_id).toBeUndefined();
     });
 
     it('should default category to fact', async () => {
@@ -215,7 +215,7 @@ describe('Hooks', () => {
 
       const result = await hook.handler(context);
 
-      const auditLog = result.data.audit_log as Array<Record<string, unknown>>;
+      const auditLog = result!.data.audit_log as Array<Record<string, unknown>>;
       expect(auditLog).toBeDefined();
       expect(auditLog).toHaveLength(1);
       expect(auditLog[0]!.action).toBe('file_access');
@@ -237,7 +237,7 @@ describe('Hooks', () => {
 
       const result = await hook.handler(context);
 
-      const auditLog = result.data.audit_log as unknown[];
+      const auditLog = result!.data.audit_log as unknown[];
       expect(auditLog).toHaveLength(2);
     });
 
@@ -263,7 +263,7 @@ describe('Hooks', () => {
         'Body',
         'normal',
       );
-      expect(result.data.notification_result).toBeDefined();
+      expect(result!.data.notification_result).toBeDefined();
     });
 
     it('should return unchanged context when no notification data', async () => {
@@ -272,7 +272,7 @@ describe('Hooks', () => {
 
       const result = await hook.handler(context);
 
-      expect(result.data.notification_result).toBeUndefined();
+      expect(result!.data.notification_result).toBeUndefined();
       expect(osIntegrationManager.notify).not.toHaveBeenCalled();
     });
 

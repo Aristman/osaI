@@ -4,7 +4,7 @@
  * T-001, T-006 unit tests: version, init, status, session, config, skills, memory, channel
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { versionCommand } from '../src/commands/version.js';
 import { initCommand } from '../src/commands/init.js';
 import { statusCommand } from '../src/commands/status.js';

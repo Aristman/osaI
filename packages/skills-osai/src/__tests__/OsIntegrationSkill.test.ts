@@ -109,7 +109,7 @@ describe('OsIntegrationSkill', () => {
       });
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['show_notification'](
+      const result = await executors['show_notification']!(
         { title: 'Test', body: 'Message', urgency: 'normal' },
         defaultContext,
       );
@@ -120,7 +120,7 @@ describe('OsIntegrationSkill', () => {
 
     it('TC-T001-002: should reject invalid urgency', async () => {
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['show_notification'](
+      const result = await executors['show_notification']!(
         { title: 'Test', body: 'Message', urgency: 'invalid' },
         defaultContext,
       );
@@ -135,7 +135,7 @@ describe('OsIntegrationSkill', () => {
       });
 
       const { executors } = createOsIntegrationSkill(manager);
-      await executors['show_notification'](
+      await executors['show_notification']!(
         { title: 'Test', body: 'Message' },
         defaultContext,
       );
@@ -145,7 +145,7 @@ describe('OsIntegrationSkill', () => {
 
     it('should fail when title is missing', async () => {
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['show_notification'](
+      const result = await executors['show_notification']!(
         { body: 'Message' },
         defaultContext,
       );
@@ -156,7 +156,7 @@ describe('OsIntegrationSkill', () => {
 
     it('should fail when body is missing', async () => {
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['show_notification'](
+      const result = await executors['show_notification']!(
         { title: 'Test' },
         defaultContext,
       );
@@ -169,7 +169,7 @@ describe('OsIntegrationSkill', () => {
       vi.mocked(manager.notify).mockResolvedValue(null);
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['show_notification'](
+      const result = await executors['show_notification']!(
         { title: 'Test', body: 'Message' },
         defaultContext,
       );
@@ -184,7 +184,7 @@ describe('OsIntegrationSkill', () => {
       );
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['show_notification'](
+      const result = await executors['show_notification']!(
         { title: 'Test', body: 'Message' },
         defaultContext,
       );
@@ -203,7 +203,7 @@ describe('OsIntegrationSkill', () => {
       });
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['watch_directory'](
+      const result = await executors['watch_directory']!(
         { path: '/tmp/test', events: ['create', 'modify'] },
         defaultContext,
       );
@@ -220,7 +220,7 @@ describe('OsIntegrationSkill', () => {
       vi.mocked(manager.watchDirectory).mockResolvedValue(null);
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['watch_directory'](
+      const result = await executors['watch_directory']!(
         { path: '/tmp/test' },
         defaultContext,
       );
@@ -237,7 +237,7 @@ describe('OsIntegrationSkill', () => {
       });
 
       const { executors } = createOsIntegrationSkill(manager);
-      await executors['watch_directory'](
+      await executors['watch_directory']!(
         { path: '/tmp/test', events: ['create', 'invalid', 'modify'] },
         defaultContext,
       );
@@ -258,7 +258,7 @@ describe('OsIntegrationSkill', () => {
       vi.mocked(manager.listProcesses).mockResolvedValue(mockProcesses);
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['list_processes'](
+      const result = await executors['list_processes']!(
         { filter: 'node' },
         defaultContext,
       );
@@ -273,7 +273,7 @@ describe('OsIntegrationSkill', () => {
       vi.mocked(manager.listProcesses).mockResolvedValue([]);
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['list_processes']({}, defaultContext);
+      const result = await executors['list_processes']!({}, defaultContext);
 
       expect(result.success).toBe(true);
       expect(manager.listProcesses).toHaveBeenCalledWith(undefined);
@@ -285,7 +285,7 @@ describe('OsIntegrationSkill', () => {
       );
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['list_processes']({}, defaultContext);
+      const result = await executors['list_processes']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Process list failed');
@@ -300,7 +300,7 @@ describe('OsIntegrationSkill', () => {
       );
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['open_application'](
+      const result = await executors['open_application']!(
         { app_name: 'code', args: ['/path/to/project'] },
         defaultContext,
       );
@@ -311,7 +311,7 @@ describe('OsIntegrationSkill', () => {
 
     it('should fail without app_name', async () => {
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['open_application']({}, defaultContext);
+      const result = await executors['open_application']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('app_name');
@@ -321,7 +321,7 @@ describe('OsIntegrationSkill', () => {
       vi.mocked(manager.getProcessManager).mockReturnValue(null);
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['open_application'](
+      const result = await executors['open_application']!(
         { app_name: 'code' },
         defaultContext,
       );
@@ -344,7 +344,7 @@ describe('OsIntegrationSkill', () => {
       vi.mocked(manager.getSystemInfo).mockResolvedValue(mockSysInfo);
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['get_system_info']({}, defaultContext);
+      const result = await executors['get_system_info']!({}, defaultContext);
 
       expect(result.success).toBe(true);
       expect(result.metadata).toHaveProperty('cpu');
@@ -357,7 +357,7 @@ describe('OsIntegrationSkill', () => {
       vi.mocked(manager.getSystemInfo).mockResolvedValue(null);
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['get_system_info']({}, defaultContext);
+      const result = await executors['get_system_info']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('not available');
@@ -369,7 +369,7 @@ describe('OsIntegrationSkill', () => {
       );
 
       const { executors } = createOsIntegrationSkill(manager);
-      const result = await executors['get_system_info']({}, defaultContext);
+      const result = await executors['get_system_info']!({}, defaultContext);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('System info failed');
