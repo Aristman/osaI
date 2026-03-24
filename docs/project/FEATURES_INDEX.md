@@ -172,6 +172,9 @@ Level 6:  F-013 Web Dashboard (зависит от F-002, параллельно
 - **Dependencies:** F-001
 - **Dependency Level:** 2
 - **Priority:** Must Have (MVP)
+- **Status:** COMPLETED
+- **Completed:** 2026-03-25
+- **Final Score:** 9.30/10
 - **Notes:** Конфигурация -- инфраструктурная фича, используемая всеми пакетами. Определяет schema, валидацию и defaults. Каждый пакет читает свою секцию через API. `osai init` -- часть CLI (F-012), но конфиг-схема и defaults -- здесь.
 - **Estimated Tasks:** 4 (Backend: 2, Config: 2, Tests: 0)
 - **Task Breakdown:**
@@ -339,6 +342,9 @@ Level 6:  F-013 Web Dashboard (зависит от F-002, параллельно
 - **Dependencies:** None
 - **Dependency Level:** 1
 - **Priority:** Should Have (V1)
+- **Status:** COMPLETED
+- **Completed:** 2026-03-25
+- **Final Score:** 9.30/10
 - **Estimated Tasks:** 5 (Backend: 3, System: 1, Tests: 1)
 - **Task Breakdown:**
   - System tray (systray2, menu items, status indicator, capability detection)
