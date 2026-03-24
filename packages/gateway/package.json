@@ -1,0 +1,37 @@
+{
+  "name": "@osai/gateway",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "ci": "tsc --noEmit && vitest run && tsup"
+  },
+  "dependencies": {
+    "@osai/types": "0.0.1",
+    "better-sqlite3": "^11.7.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/ws": "^8.18.0",
+    "typescript": "^5.9.3",
+    "tsup": "^8.4.0",
+    "vitest": "^4.1.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
