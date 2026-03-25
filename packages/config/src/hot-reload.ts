@@ -6,13 +6,10 @@
  * F-003 T-004: Config Hot-Reload Mechanism
  */
 
-import { createRequire } from 'node:module';
 import type { OsaIConfig } from '@osai/types';
 import { EventEmitter } from 'node:events';
 
 import { loadConfigSync, getConfigPath, readConfigFile, parseConfig, checkPermissions, validateAndNormalize } from './loader.js';
-
-const require = createRequire(import.meta.url);
 
 // ---------------------------------------------------------------------------
 // Types
@@ -200,10 +197,10 @@ export class ConfigWatcher extends EventEmitter {
       this.currentConfig = null;
     }
 
-    // Load chokidar via createRequire for ESM compatibility
+    // Load chokidar via dynamic import (works in both ESM and CJS)
     let chokidarModule: { watch: (path: string, options: Record<string, unknown>) => { close: () => Promise<void>; on: (event: string, cb: (arg: unknown) => void) => void } } | null = null;
     try {
-      chokidarModule = require('chokidar');
+      chokidarModule = await import('chokidar');
     } catch {
       // chokidar not installed
     }
