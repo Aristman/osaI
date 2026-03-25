@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+/*
+ * osaI Dashboard Theme
+ * Custom CSS variables for consistent theming
+ */
+
+@theme {
+  /* Primary - Blue tones */
+  --color-osai-primary-50: #eff6ff;
+  --color-osai-primary-100: #dbeafe;
+  --color-osai-primary-200: #bfdbfe;
+  --color-osai-primary-300: #93c5fd;
+  --color-osai-primary-400: #60a5fa;
+  --color-osai-primary-500: #3b82f6;
+  --color-osai-primary-600: #2563eb;
+  --color-osai-primary-700: #1d4ed8;
+  --color-osai-primary-800: #1e40af;
+  --color-osai-primary-900: #1e3a8a;
+
+  /* Accent - Cyan/Teal */
+  --color-osai-accent-400: #22d3ee;
+  --color-osai-accent-500: #06b6d4;
+  --color-osai-accent-600: #0891b2;
+
+  /* Surface - Dark background layers */
+  --color-osai-surface-900: #0f0f14;
+  --color-osai-surface-800: #17171f;
+  --color-osai-surface-700: #1e1e2a;
+  --color-osai-surface-600: #272736;
+  --color-osai-surface-500: #363648;
+
+  /* Text */
+  --color-osai-text-primary: #f1f5f9;
+  --color-osai-text-secondary: #94a3b8;
+  --color-osai-text-muted: #64748b;
+
+  /* Status colors */
+  --color-osai-success: #22c55e;
+  --color-osai-warning: #f59e0b;
+  --color-osai-error: #ef4444;
+  --color-osai-info: #3b82f6;
+}
+
+/* Base styles for dark-first design */
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  @apply bg-osai-surface-900 text-osai-text-primary;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-osai-surface-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-osai-surface-500 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-osai-surface-600;
+}
