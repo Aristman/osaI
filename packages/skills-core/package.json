@@ -19,5 +19,10 @@
   },
   "engines": {
     "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "pino": "^10.3.1",
+    "@osai/shared": "workspace:*",
+    "@osai/observability": "workspace:*"
   }
 }

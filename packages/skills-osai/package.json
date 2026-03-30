@@ -19,5 +19,12 @@
   },
   "engines": {
     "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "pino": "^10.3.1",
+    "@osai/skills-core": "workspace:*",
+    "@osai/memory": "workspace:*",
+    "@osai/shared": "workspace:*",
+    "@osai/observability": "workspace:*"
   }
 }

@@ -149,9 +149,35 @@ importers:
         specifier: ^7.6.13
         version: 7.6.13
 
-  packages/skills-core: {}
+  packages/skills-core:
+    dependencies:
+      '@osai/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@osai/shared':
+        specifier: workspace:*
+        version: link:../shared
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
 
-  packages/skills-osai: {}
+  packages/skills-osai:
+    dependencies:
+      '@osai/memory':
+        specifier: workspace:*
+        version: link:../memory
+      '@osai/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@osai/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@osai/skills-core':
+        specifier: workspace:*
+        version: link:../skills-core
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
 
   packages/voice: {}
 
