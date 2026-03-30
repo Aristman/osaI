@@ -19,5 +19,18 @@
   },
   "engines": {
     "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "pino": "^10.3.1",
+    "@osai/shared": "workspace:*",
+    "@osai/observability": "workspace:*",
+    "@osai/providers": "workspace:*"
+  },
+  "optionalDependencies": {
+    "sqlite-vec": "^0.1.6"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13"
   }
 }

@@ -45,7 +45,31 @@ importers:
 
   packages/knowledge-base: {}
 
-  packages/memory: {}
+  packages/memory:
+    dependencies:
+      '@osai/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@osai/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@osai/shared':
+        specifier: workspace:*
+        version: link:../shared
+      better-sqlite3:
+        specifier: ^12.8.0
+        version: 12.8.0
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
+    optionalDependencies:
+      sqlite-vec:
+        specifier: ^0.1.6
+        version: 0.1.8
+    devDependencies:
+      '@types/better-sqlite3':
+        specifier: ^7.6.13
+        version: 7.6.13
 
   packages/observability:
     dependencies:
@@ -1266,6 +1290,34 @@ packages:
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
+
+  sqlite-vec-darwin-arm64@0.1.8:
+    resolution: {integrity: sha512-EoHyjPgX8uhWWcYSWbLwJHU6j8AQvwYbwDXFaT1ocdNtJy5qAGtX6LLsBR3vuWOyosMnULF6+DExjldku23h7A==}
+    cpu: [arm64]
+    os: [darwin]
+
+  sqlite-vec-darwin-x64@0.1.8:
+    resolution: {integrity: sha512-IafNV502w90y1BvWQXaRZ2AyyqNINmZ+7LEvkfL45Gf7kC182EFKxn9vbCy6UrY6QYXN/XQo7aICpTO7MIZBqw==}
+    cpu: [x64]
+    os: [darwin]
+
+  sqlite-vec-linux-arm64@0.1.8:
+    resolution: {integrity: sha512-R/zogzxQ4LEAgju3knhZuWs8MKdIqN6Bq+ORhLYz5S4eQ98F+rYqilHQ8vsE3Ouy347yxNB2HyldDMcwzgfTyQ==}
+    cpu: [arm64]
+    os: [linux]
+
+  sqlite-vec-linux-x64@0.1.8:
+    resolution: {integrity: sha512-DBIf2d2mvDb1M//snAKljpIsNQNqXX2AXWNBua0YCj40F/ygFJJ8j3k1pbcJfaEoaP21B+VquH0Gc6RIwZvXig==}
+    cpu: [x64]
+    os: [linux]
+
+  sqlite-vec-windows-x64@0.1.8:
+    resolution: {integrity: sha512-+fBb7kzTpSAvoO/06YMDefnM5PpRhnPVqAYiUvLfBnUCRILDq2F9lcjQQIRjhobrb3eoJWzsGHwnqdVfaIUNxQ==}
+    cpu: [x64]
+    os: [win32]
+
+  sqlite-vec@0.1.8:
+    resolution: {integrity: sha512-L3xKhQUYQ7kcb3v31KPyPaEigE2upETMSx/5K3vTwm8HRsbci9PKGklXU+mxEYVogojpkenM0TZK5Sz/2FXTQw==}
 
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
@@ -2579,6 +2631,30 @@ snapshots:
   source-map-js@1.2.1: {}
 
   split2@4.2.0: {}
+
+  sqlite-vec-darwin-arm64@0.1.8:
+    optional: true
+
+  sqlite-vec-darwin-x64@0.1.8:
+    optional: true
+
+  sqlite-vec-linux-arm64@0.1.8:
+    optional: true
+
+  sqlite-vec-linux-x64@0.1.8:
+    optional: true
+
+  sqlite-vec-windows-x64@0.1.8:
+    optional: true
+
+  sqlite-vec@0.1.8:
+    optionalDependencies:
+      sqlite-vec-darwin-arm64: 0.1.8
+      sqlite-vec-darwin-x64: 0.1.8
+      sqlite-vec-linux-arm64: 0.1.8
+      sqlite-vec-linux-x64: 0.1.8
+      sqlite-vec-windows-x64: 0.1.8
+    optional: true
 
   stackback@0.0.2: {}
 
