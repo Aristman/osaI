@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [OSAI-DEV]
+  pull_request:
+    branches: [OSAI-DEV]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [22]
+
+    env:
+      PNPM_HOME: ${{ github.workspace }}/.pnpm-home
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        id: pnpm-store
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Verify native modules
+        run: pnpm tsx scripts/check-native-modules.ts
+
+      - name: Run unit tests
+        run: pnpm vitest run --reporter=verbose --no-color tests/unit/
+
+      - name: Run integration tests
+        run: pnpm vitest run --reporter=verbose --no-color tests/integration/
+
+      - name: Run e2e tests
+        run: pnpm vitest run --reporter=verbose --no-color tests/e2e/
+
+      - name: Run CI tests with coverage
+        run: pnpm test:ci
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}
+          path: coverage/
+          retention-days: 7
+          if-no-files-found: warn

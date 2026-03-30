@@ -3,7 +3,9 @@
     "target": "ES2022",
     "module": "Node16",
     "moduleResolution": "Node16",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -22,18 +24,47 @@
     "exactOptionalPropertyTypes": false
   },
   "references": [
-    { "path": "packages/agent" },
-    { "path": "packages/cli" },
-    { "path": "packages/gateway" },
-    { "path": "packages/knowledge-base" },
-    { "path": "packages/memory" },
-    { "path": "packages/observability" },
-    { "path": "packages/os-integration" },
-    { "path": "packages/providers" },
-    { "path": "packages/shared" },
-    { "path": "packages/skills-core" },
-    { "path": "packages/skills-osai" },
-    { "path": "packages/voice" }
+    {
+      "path": "packages/agent"
+    },
+    {
+      "path": "packages/cli"
+    },
+    {
+      "path": "packages/gateway"
+    },
+    {
+      "path": "packages/knowledge-base"
+    },
+    {
+      "path": "packages/memory"
+    },
+    {
+      "path": "packages/observability"
+    },
+    {
+      "path": "packages/os-integration"
+    },
+    {
+      "path": "packages/providers"
+    },
+    {
+      "path": "packages/shared"
+    },
+    {
+      "path": "packages/skills-core"
+    },
+    {
+      "path": "packages/skills-osai"
+    },
+    {
+      "path": "packages/voice"
+    }
   ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "files": [],
+  "include": []
 }
