@@ -36,3 +36,16 @@ export {
 } from "./audit.js";
 
 export { AuditLogRepository } from "./audit-repository.js";
+
+// Audit submodule (T-007: Audit Service Enhancement)
+export {
+  AuditEventType,
+  AuditService as AuditServiceV2,
+  AuditFilters,
+  AuditLogRepository as AuditLogRepositoryV2,
+  type AuditEntryInput as AuditEntryInputV2,
+  type AuditRecordExtended,
+  type RiskLevel as RiskLevelV2,
+  type UserDecision as UserDecisionV2,
+  type IAuditLogRepository as IAuditLogRepositoryV2,
+} from "./audit/index.js";

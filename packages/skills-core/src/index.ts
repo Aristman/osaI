@@ -3,6 +3,7 @@
  *
  * Built-in skills: Filesystem, Shell, Browser, HTTP.
  * Skill registry, SKILL.md parser, permission model.
+ * Security modules: FileSandbox, ShellSecurity, CommandValidator.
  */
 
 export { SkillRegistry } from './registry/SkillRegistry.js';
@@ -31,3 +32,34 @@ export type {
 } from './permissions/types.js';
 
 export type { ParsedSkillMd } from './parser/SkillMdValidator.js';
+
+// Security modules (T-008 barrel export)
+export {
+  FileSandbox,
+  SymlinkResolver,
+  createSandboxAwareFilesystemSkill,
+  DEFAULT_BLOCKED_PATTERNS,
+} from './security/file-sandbox/index.js';
+
+export type {
+  FileSandboxConfig,
+  SandboxResult,
+} from './security/file-sandbox/types.js';
+
+export {
+  CommandValidator,
+  ShellSecurity,
+  SecureShellExecutor,
+  resolveConfig,
+} from './security/shell/index.js';
+
+export type {
+  AllowedResult,
+  BlockedCommand,
+  CommandLogEntry,
+  ShellSecurityConfig,
+  ShellSecurityUserConfig,
+} from './security/shell/types.js';
+
+export type { CommandExecutionResult } from './security/shell/ShellSecurity.js';
+export type { SecureExecParams } from './security/shell/SecureShellExecutor.js';

@@ -8,12 +8,18 @@
 export {
   HookPoint,
   HookRegistry,
+  createBeforeToolCallSecurity,
+  createOnFileAccessAudit,
+  createAfterToolCallAudit,
 } from './hooks/index.js';
 
 export type {
   HookContext,
   HookHandler,
   HookResult,
+  BeforeToolCallSecurityConfig,
+  OnFileAccessAuditConfig,
+  AfterToolCallAuditConfig,
 } from './hooks/index.js';
 
 export { ContextAssembler } from './context/index.js';
