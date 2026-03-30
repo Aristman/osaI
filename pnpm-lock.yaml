@@ -43,7 +43,31 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
 
-  packages/knowledge-base: {}
+  packages/knowledge-base:
+    dependencies:
+      '@osai/memory':
+        specifier: workspace:*
+        version: link:../memory
+      '@osai/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@osai/shared':
+        specifier: workspace:*
+        version: link:../shared
+      better-sqlite3:
+        specifier: ^12.8.0
+        version: 12.8.0
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
+    optionalDependencies:
+      sqlite-vec:
+        specifier: ^0.1.6
+        version: 0.1.8
+    devDependencies:
+      '@types/better-sqlite3':
+        specifier: ^7.6.13
+        version: 7.6.13
 
   packages/memory:
     dependencies:
