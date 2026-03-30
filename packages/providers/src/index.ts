@@ -31,6 +31,14 @@ export {
   CircuitBreakerOpenError,
 } from './errors.js';
 
+// Circuit Breaker
+export { CircuitBreaker } from './circuit-breaker/index.js';
+export { CircuitState } from './circuit-breaker/index.js';
+export type {
+  CircuitBreakerConfig,
+  CircuitBreakerStats,
+} from './circuit-breaker/index.js';
+
 // Base class
 export { BaseLLMProvider } from './base.js';
 
@@ -38,3 +46,5 @@ export { BaseLLMProvider } from './base.js';
 export { OpenAIProvider } from './openai/index.js';
 export { ZAiProvider } from './z-ai/index.js';
 export { AnthropicProvider } from './anthropic/index.js';
+export { YandexProvider } from './yandex/index.js';
+export { OllamaProvider } from './ollama/index.js';
