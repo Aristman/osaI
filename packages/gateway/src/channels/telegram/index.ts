@@ -1,35 +1,20 @@
-export { ChannelRouter } from "./router.js";
-export type { ChannelRouterConfig } from "./router.js";
-
-export { CliHandler } from "./cli-handler.js";
-export type { CliHandlerConfig } from "./cli-handler.js";
-
-export type {
-  ChannelHandler,
-  ChannelContext,
-  ChannelResult,
-} from "./types.js";
-
-export { ChannelHandlerError } from "./types.js";
-
-// Telegram Integration (F-010, DOMAIN-006)
 export {
   TelegramManager,
   TelegramManagerError,
   type TelegramManagerConfig,
-} from "./telegram/index.js";
+} from "./manager.js";
 
 export {
   TelegramBot,
   TelegramBotError,
   type TelegramBotOptions,
-} from "./telegram/index.js";
+} from "./bot.js";
 
 export {
   UserbotBridge,
   UserbotBridgeError,
   type UserbotBridgeConfig,
-} from "./telegram/index.js";
+} from "./userbot.js";
 
 export {
   AuthFlow,
@@ -38,20 +23,39 @@ export {
   type AuthFlowResult,
   type PromptFunction,
   type SendAuthRequestFunction,
-} from "./telegram/index.js";
+} from "./auth-flow.js";
+
+export {
+  MirrorEngine,
+  MirrorEngineError,
+  markdownToTelegramHtml,
+  telegramHtmlToMarkdown,
+  type MirrorEngineConfig,
+  type MirrorMessageEvent,
+  type TelegramSender,
+  type IncomingTelegramMessage,
+  type TelegramMediaMessage,
+  type TelegramMediaInfo,
+  type MediaDownloader,
+  type GatewayInjector,
+  type MirrorEngineStats,
+} from "./mirror.js";
 
 export type {
+  // Configuration types
   TelegramBotConfig,
   TelegramUserbotConfig,
   TelegramConfig,
   MirrorConfig,
   MirrorDirection,
+  // Bridge protocol types
   BridgeRequestType,
   BridgeResponseType,
   BridgeRequest,
   BridgeResponse,
+  // Manager status types
   TelegramManagerMode,
   ComponentStatus,
   ComponentStatusInfo,
   TelegramManagerStatus,
-} from "./telegram/index.js";
+} from "./types.js";

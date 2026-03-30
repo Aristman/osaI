@@ -5,4 +5,4 @@
  * commands: chat, session, config, skills, memory, channel, status.
  */
 
-export {};
+export { runChannelAddTelegram } from "./commands/channel/add-telegram.js";

@@ -19,5 +19,9 @@
   },
   "engines": {
     "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "@osai/gateway": "workspace:*",
+    "pino": "^10.3.1"
   }
 }

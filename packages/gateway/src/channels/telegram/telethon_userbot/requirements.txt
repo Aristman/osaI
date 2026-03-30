@@ -1,0 +1,7 @@
+# Telethon Userbot microservice dependencies
+# Telethon client for Telegram MTProto protocol
+telethon>=1.36.0,<2.0.0
+
+# AES-256 encryption for session storage (stdlib, no extra dep needed)
+# cryptography is used for secure key derivation (PBKDF2)
+cryptography>=42.0.0,<44.0.0

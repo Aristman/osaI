@@ -76,4 +76,32 @@ export {
   type ChannelResult,
   // Channel errors
   ChannelHandlerError,
+  // Telegram Integration (F-010)
+  TelegramManager,
+  TelegramManagerError,
+  type TelegramManagerConfig,
+  // Telegram Bot (T-002)
+  TelegramBot,
+  TelegramBotError,
+  type TelegramBotOptions,
+  // Telegram Userbot Bridge (T-003)
+  UserbotBridge,
+  UserbotBridgeError,
+  type UserbotBridgeConfig,
+  // Auth Flow (T-005)
+  AuthFlow,
+  AuthFlowError,
+  type AuthFlowConfig,
+  type AuthFlowResult,
+  type PromptFunction,
+  type SendAuthRequestFunction,
+  // Telegram types
+  type TelegramBotConfig,
+  type TelegramUserbotConfig,
+  type TelegramConfig,
+  type MirrorConfig,
+  type MirrorDirection,
+  type BridgeRequest,
+  type BridgeResponse,
+  type TelegramManagerStatus,
 } from "./channels/index.js";
