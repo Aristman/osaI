@@ -1,1 +1,14 @@
-export * from "./channel/index.js";
+export { runChannelAddTelegram } from "./channel/index.js";
+export { runChatList, runChatCreate, runChatSwitch, runChatDelete, runChatArchive } from "./chat/index.js";
+export { runInit } from "./init.js";
+export type { InitOptions } from "./init.js";
+export { runStatus } from "./status.js";
+export type { StatusOptions } from "./status.js";
+export { runConfig } from "./config.js";
+export type { ConfigOptions } from "./config.js";
+export { runSessionList, runSessionResume } from "./session/index.js";
+export { runSkillsList } from "./skills/index.js";
+export { runMemorySearch } from "./memory/index.js";
+export type { MemorySearchOptions } from "./memory/index.js";
+export { runQuickCommand } from "./quick.js";
+export type { QuickCommandOptions, QuickCommandResult } from "./quick.js";
