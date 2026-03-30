@@ -21,6 +21,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@types/node": "^22.13.0",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.0",
