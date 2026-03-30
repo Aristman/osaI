@@ -5,4 +5,31 @@
  * auth profile rotation, circuit breaker.
  */
 
-export {};
+// Types and interfaces
+export type {
+  ChatRole,
+  ChatMessage,
+  ToolCall,
+  ToolDefinition,
+  TokenUsage,
+  LLMChunk,
+  LLMRequest,
+  LLMResponse,
+  ProviderConfig,
+  LLMProvider,
+} from './types.js';
+
+export { ProviderStatus } from './types.js';
+
+// Error hierarchy
+export {
+  ProviderError,
+  ProviderUnavailableError,
+  RateLimitError,
+  TokenLimitError,
+  AuthError,
+  CircuitBreakerOpenError,
+} from './errors.js';
+
+// Base class
+export { BaseLLMProvider } from './base.js';
