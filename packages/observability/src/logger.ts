@@ -14,6 +14,7 @@ import type { Logger as PinoLogger, DestinationStream } from "pino";
 import { mkdirSync, createWriteStream, type WriteStream } from "node:fs";
 import { homedir, hostname } from "node:os";
 import { join } from "node:path";
+import { TraceContext } from "./trace.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -142,7 +143,15 @@ export class LoggerFactory {
           hostname: hostname(),
         },
         mixin() {
-          return { timestamp: new Date().toISOString() };
+          const ctx = TraceContext.get();
+          const result: Record<string, unknown> = {
+            timestamp: new Date().toISOString(),
+          };
+          if (ctx !== undefined) {
+            result.trace_id = ctx.trace_id;
+            result.span_id = ctx.span_id;
+          }
+          return result;
         },
       },
       pino.multistream(streams),

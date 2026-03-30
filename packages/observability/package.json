@@ -21,9 +21,12 @@
     "node": ">=22.16.0"
   },
   "dependencies": {
-    "pino": "^10.3.1"
+    "pino": "^10.3.1",
+    "better-sqlite3": "^12.8.0"
   },
   "devDependencies": {
+    "@osai/shared": "workspace:*",
+    "@types/better-sqlite3": "^7.6.13",
     "pino-pretty": "^13.1.3"
   }
 }

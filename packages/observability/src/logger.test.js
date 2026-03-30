@@ -14,6 +14,7 @@ import { mkdirSync, rmSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { LoggerFactory, getLogger, createModuleLogger, } from "./logger.js";
+import { TraceContext } from "./trace.js";
 describe("Logger", () => {
     const testLogDir = join(tmpdir(), `osai-logger-test-${process.pid}`);
     beforeEach(async () => {
@@ -441,6 +442,215 @@ describe("Logger", () => {
             const entry = JSON.parse(content.trim().split("\n")[0] ?? "{}");
             expect(entry.module).toBe("providers");
             expect(entry.component).toBe("failover");
+        });
+    });
+    // =========================================================================
+    // T-002: TraceContext correlation IDs mixin
+    // =========================================================================
+    // -------------------------------------------------------------------------
+    // T-002-01: mixin injects trace_id/span_id from TraceContext
+    // -------------------------------------------------------------------------
+    describe("T-002-01: TraceContext mixin", () => {
+        it("should inject trace_id and span_id from AsyncLocalStorage into log entries", async () => {
+            const config = {
+                level: "info",
+                logDir: testLogDir,
+                enableFileTransport: true,
+                prettyPrint: false,
+            };
+            LoggerFactory.configure(config);
+            const logger = LoggerFactory.create("agent", "loop");
+            const ctx = TraceContext.create();
+            await TraceContext.runInContext(ctx, async () => {
+                logger.info("message with auto trace");
+            });
+            await LoggerFactory.shutdown();
+            const logFilePath = join(testLogDir, "osai.log");
+            const content = readFileSync(logFilePath, "utf8");
+            const entry = JSON.parse(content.trim().split("\n")[0] ?? "{}");
+            expect(entry.trace_id).toBe(ctx.trace_id);
+            expect(entry.span_id).toBe(ctx.span_id);
+            expect(entry.message).toBe("message with auto trace");
+        });
+        it("should include both trace_id and span_id in each log entry", async () => {
+            const config = {
+                level: "info",
+                logDir: testLogDir,
+                enableFileTransport: true,
+                prettyPrint: false,
+            };
+            LoggerFactory.configure(config);
+            const logger = LoggerFactory.create("gateway");
+            const ctx = {
+                trace_id: "aaaaaaaa-bbbb-4ccc-dddd-eeeeeeeeeeee",
+                span_id: "1111222233334444",
+            };
+            await TraceContext.runInContext(ctx, async () => {
+                logger.info("first");
+                logger.warn("second");
+                logger.error("third");
+            });
+            await LoggerFactory.shutdown();
+            const logFilePath = join(testLogDir, "osai.log");
+            const content = readFileSync(logFilePath, "utf8");
+            const lines = content
+                .trim()
+                .split("\n")
+                .filter((l) => l.length > 0);
+            expect(lines.length).toBe(3);
+            for (const line of lines) {
+                const entry = JSON.parse(line);
+                expect(entry.trace_id).toBe("aaaaaaaa-bbbb-4ccc-dddd-eeeeeeeeeeee");
+                expect(entry.span_id).toBe("1111222233334444");
+            }
+        });
+    });
+    // -------------------------------------------------------------------------
+    // T-002-02: no trace context -- entries without trace_id/span_id
+    // -------------------------------------------------------------------------
+    describe("T-002-02: no trace context", () => {
+        it("should not include trace_id/span_id when no TraceContext is set", async () => {
+            const config = {
+                level: "info",
+                logDir: testLogDir,
+                enableFileTransport: true,
+                prettyPrint: false,
+            };
+            LoggerFactory.configure(config);
+            const logger = LoggerFactory.create("agent");
+            logger.info("no trace context message");
+            await LoggerFactory.shutdown();
+            const logFilePath = join(testLogDir, "osai.log");
+            const content = readFileSync(logFilePath, "utf8");
+            const entry = JSON.parse(content.trim().split("\n")[0] ?? "{}");
+            expect(entry.message).toBe("no trace context message");
+            expect(entry.module).toBe("agent");
+            // trace_id and span_id should not be present or should be undefined
+            // When no context, mixin returns empty object, so no trace fields
+            expect(entry.trace_id).toBeUndefined();
+            expect(entry.span_id).toBeUndefined();
+        });
+    });
+    // -------------------------------------------------------------------------
+    // T-002-03: TraceContext mixin takes precedence over manual trace_id
+    // -------------------------------------------------------------------------
+    describe("T-002-03: TraceContext mixin precedence", () => {
+        it("should override manual trace_id from ChildLoggerOptions with TraceContext", async () => {
+            const config = {
+                level: "info",
+                logDir: testLogDir,
+                enableFileTransport: true,
+                prettyPrint: false,
+            };
+            LoggerFactory.configure(config);
+            const logger = LoggerFactory.createChild({
+                module: "agent",
+                trace_id: "manual-trace-123",
+            });
+            const asyncCtx = {
+                trace_id: "async-trace-456",
+                span_id: "1234567890abcdef",
+            };
+            await TraceContext.runInContext(asyncCtx, async () => {
+                logger.info("precedence test");
+            });
+            await LoggerFactory.shutdown();
+            const logFilePath = join(testLogDir, "osai.log");
+            const content = readFileSync(logFilePath, "utf8");
+            const entry = JSON.parse(content.trim().split("\n")[0] ?? "{}");
+            // TraceContext mixin takes precedence over manual binding
+            expect(entry.trace_id).toBe("async-trace-456");
+            expect(entry.span_id).toBe("1234567890abcdef");
+            expect(entry.module).toBe("agent");
+        });
+        it("should use manual trace_id when no TraceContext is set", async () => {
+            const config = {
+                level: "info",
+                logDir: testLogDir,
+                enableFileTransport: true,
+                prettyPrint: false,
+            };
+            LoggerFactory.configure(config);
+            const logger = LoggerFactory.createChild({
+                module: "agent",
+                trace_id: "manual-trace-123",
+            });
+            logger.info("fallback test");
+            await LoggerFactory.shutdown();
+            const logFilePath = join(testLogDir, "osai.log");
+            const content = readFileSync(logFilePath, "utf8");
+            const entry = JSON.parse(content.trim().split("\n")[0] ?? "{}");
+            // When no TraceContext, manual trace_id from binding is present
+            expect(entry.trace_id).toBe("manual-trace-123");
+            expect(entry.module).toBe("agent");
+        });
+    });
+    // -------------------------------------------------------------------------
+    // T-002-04: context changes are reflected in subsequent log entries
+    // -------------------------------------------------------------------------
+    describe("T-002-04: dynamic context changes", () => {
+        it("should reflect TraceContext changes within same runInContext", async () => {
+            const config = {
+                level: "info",
+                logDir: testLogDir,
+                enableFileTransport: true,
+                prettyPrint: false,
+            };
+            LoggerFactory.configure(config);
+            const logger = LoggerFactory.create("agent");
+            const ctx1 = {
+                trace_id: "trace-context-one",
+                span_id: "aaaa1111aaaa1111",
+            };
+            const ctx2 = {
+                trace_id: "trace-context-two",
+                span_id: "bbbb2222bbbb2222",
+            };
+            await TraceContext.runInContext(ctx1, async () => {
+                logger.info("in ctx1");
+                // set() overrides within the same store
+                TraceContext.set(ctx2);
+                logger.info("in ctx2");
+            });
+            await LoggerFactory.shutdown();
+            const logFilePath = join(testLogDir, "osai.log");
+            const content = readFileSync(logFilePath, "utf8");
+            const lines = content
+                .trim()
+                .split("\n")
+                .filter((l) => l.length > 0);
+            expect(lines.length).toBe(2);
+            const entry1 = JSON.parse(lines[0] ?? "{}");
+            const entry2 = JSON.parse(lines[1] ?? "{}");
+            expect(entry1.trace_id).toBe("trace-context-one");
+            expect(entry1.span_id).toBe("aaaa1111aaaa1111");
+            expect(entry2.trace_id).toBe("trace-context-two");
+            expect(entry2.span_id).toBe("bbbb2222bbbb2222");
+        });
+    });
+    // -------------------------------------------------------------------------
+    // T-002-05: root logger also gets trace context via mixin
+    // -------------------------------------------------------------------------
+    describe("T-002-05: root logger trace context", () => {
+        it("should inject trace_id/span_id into root logger entries", async () => {
+            const config = {
+                level: "info",
+                logDir: testLogDir,
+                enableFileTransport: true,
+                prettyPrint: false,
+            };
+            LoggerFactory.configure(config);
+            const logger = LoggerFactory.getLogger();
+            const ctx = TraceContext.create();
+            await TraceContext.runInContext(ctx, async () => {
+                logger.info("root logger with trace");
+            });
+            await LoggerFactory.shutdown();
+            const logFilePath = join(testLogDir, "osai.log");
+            const content = readFileSync(logFilePath, "utf8");
+            const entry = JSON.parse(content.trim().split("\n")[0] ?? "{}");
+            expect(entry.trace_id).toBe(ctx.trace_id);
+            expect(entry.span_id).toBe(ctx.span_id);
         });
     });
 });
