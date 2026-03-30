@@ -26,7 +26,7 @@ export default tseslint.config(
       "**/*.js",
       "**/*.d.ts",
       "coverage/",
-      "packages/",
+      "packages/*/dist/",
     ],
   },
 );

@@ -21,5 +21,19 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false
   },
+  "references": [
+    { "path": "packages/agent" },
+    { "path": "packages/cli" },
+    { "path": "packages/gateway" },
+    { "path": "packages/knowledge-base" },
+    { "path": "packages/memory" },
+    { "path": "packages/observability" },
+    { "path": "packages/os-integration" },
+    { "path": "packages/providers" },
+    { "path": "packages/shared" },
+    { "path": "packages/skills-core" },
+    { "path": "packages/skills-osai" },
+    { "path": "packages/voice" }
+  ],
   "exclude": ["node_modules", "dist"]
 }
