@@ -33,3 +33,8 @@ export {
 
 // Base class
 export { BaseLLMProvider } from './base.js';
+
+// Providers
+export { OpenAIProvider } from './openai/index.js';
+export { ZAiProvider } from './z-ai/index.js';
+export { AnthropicProvider } from './anthropic/index.js';
