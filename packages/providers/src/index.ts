@@ -48,3 +48,13 @@ export { ZAiProvider } from './z-ai/index.js';
 export { AnthropicProvider } from './anthropic/index.js';
 export { YandexProvider } from './yandex/index.js';
 export { OllamaProvider } from './ollama/index.js';
+
+// Provider Chain + Auth Rotation
+export { ProviderChain } from './chain/index.js';
+export { AuthRotator } from './chain/index.js';
+export { RotationResult } from './chain/index.js';
+export type {
+  ChainLogger,
+  ProviderChainConfig,
+  ProviderChainEntryStatus,
+} from './chain/index.js';
