@@ -31,7 +31,7 @@
 - **Solo developer**: строгая приоритизация P0 для MVP, минимальная сложность
 - **Local-first**: все данные на машине пользователя, никаких облачных бэкендов
 - **OpenClaw upstream не существует**: core разрабатывается самостоятельно (AS-01)
-- **Z.ai не существует**: OpenAI-совместимый adapter с configurable base URL (AS-02)
+- **Z.ai верифицирован**: endpoint `https://api.z.ai/api/paas/v4`, модель `glm-5`, OpenAI-совместимый (AS-02)
 - **Ollama не поддерживает STT/TTS**: whisper.cpp + Piper TTS как отдельные процессы (AS-03)
 - **Qdrant не имеет embedded mode для Node.js**: sqlite-vec как primary vector storage (AS-04)
 - **Node.js 22.16+ LTS / 24**: единый runtime, TypeScript 5.x strict
@@ -100,8 +100,9 @@ osaI v3 -- локально работающий AI-ассистент, полн
   External APIs (cloud):
   +-------+  +--------+  +-----------+  +--------+
   | Z.ai  |  | Yandex |  | Anthropic |  | OpenAI |
-  |(OpenAI|  | Found. |  | Claude    |  | GPT    |
-  | compat)|  | Models |  |           |  |        |
+  |(glm-5)|  | Found. |  | Claude    |  | GPT    |
+  |/api/  |  | Models |  |           |  |        |
+  |paas/v4|  |        |  |           |  |        |
   +-------+  +--------+  +-----------+  +--------+
 ```
 
@@ -516,7 +517,7 @@ interface ProviderChain {
 **Failover Chain:**
 
 ```
-Request -> Z.ai (OpenAI-совместимый, configurable URL)
+Request -> Z.ai (https://api.z.ai/api/paas/v4, модель glm-5)
               |
               +-- OK -> response
               +-- 429 Rate Limit -> wait + retry + auth rotation
@@ -541,7 +542,7 @@ Request -> Z.ai (OpenAI-совместимый, configurable URL)
 
 | ID | Провайдер | API формат | Тип |
 |---|---|---|---|
-| `z-ai` | OpenAI-совместимый adapter | OpenAI Chat Completions (configurable base URL) | Cloud (primary) |
+| `z-ai` | Z.ai | OpenAI Chat Completions (`https://api.z.ai/api/paas/v4`, модель `glm-5`) | Cloud (primary) |
 | `yandex` | Yandex Foundation Models | Yandex API | Cloud (fallback 1) |
 | `anthropic` | Anthropic Claude | Anthropic Messages API | Cloud (fallback 2) |
 | `openai` | OpenAI GPT | OpenAI Chat Completions | Cloud (fallback 3) |
@@ -1197,7 +1198,7 @@ Layer 7: Audit
     "circuitBreaker": { "failureThreshold": 5, "resetTimeoutMs": 30000 }
   },
   "providers": {
-    "z-ai": { "type": "openai-compat", "baseUrl": "https://...", "apiKey": "..." },
+    "z-ai": { "type": "openai-compat", "baseUrl": "https://api.z.ai/api/paas/v4", "apiKey": "...", "model": "glm-5" },
     "yandex": { "type": "yandex-foundation", "catalogId": "...", "apiKey": "...", "model": "yandexgpt-pro" },
     "anthropic": { "type": "anthropic", "apiKey": "..." },
     "openai": { "type": "openai", "apiKey": "..." },
@@ -1332,16 +1333,16 @@ Qdrant сохранён как optional для scenarios с >100K записей
 
 **Trade-off:** Требуется установка whisper.cpp и Piper TTS на целевой машине. Увеличивает footprint при установке.
 
-### AD-004: OpenAI-совместимый adapter для Z.ai (configurable base URL)
+### AD-004: Z.ai как primary LLM-провайдер (OpenAI-совместимый)
 
-**Решение:** Z.ai provider реализуется как OpenAI-совместимый adapter с конфигурируемым base URL. Пользователь может указать любой OpenAI-совместимый endpoint.
+**Решение:** Z.ai используется как primary LLM-провайдер. Верифицирован 2026-03-30: endpoint `https://api.z.ai/api/paas/v4`, модель `glm-5`, OpenAI-совместимый API. Работает через OpenAI Node.js SDK с кастомным `baseURL`. Base URL остаётся конфигурируемым для совместимости.
 
 **Альтернативы:**
-- (A) Hardcoded Z.ai endpoint -- невозможно (AS-02, Z.ai не существует)
+- (A) Hardcoded Z.ai endpoint -- ограничивает гибкость
 - (B) OpenRouter как primary -- привязка к конкретному сервису
-- (C) OpenAI-совместимый adapter с configurable URL -- **выбрано**
+- (C) Z.ai с конфигурируемым base URL -- **выбрано**
 
-**Обоснование:** Позволяет использовать любой OpenAI-совместимый провайдер: OpenRouter, Groq, Fireworks AI, Together AI, LM Studio, local vLLM. Максимальная гибкость при минимальной реализации -- OpenAI SDK поддерживает кастомный `baseURL`.
+**Обоснование:** Z.ai верифицирован как реальный провайдер. OpenAI-совместимый API позволяет использовать OpenAI Node.js SDK напрямую. Конфигурируемый `baseURL` обеспечивает гибкость -- при необходимости можно переключиться на любой другой OpenAI-совместимый провайдер (OpenRouter, Groq, Fireworks AI и т.д.).
 
 **Trade-off:** Пользователь должен самостоятельно выбрать и сконфигурировать primary провайдер. Нет "из коробки" лучшего качества -- зависит от выбранного endpoint.
 
@@ -1425,7 +1426,7 @@ Qdrant сохранён как optional для scenarios с >100K записей
 
 | # | Вопрос | Статус | Критичность |
 |---|---|---|---|
-| OQ-ARCH-01 | Какой конкретный OpenAI-совместимый endpoint рекомендовать как Z.ai placeholder? | Открыт | Medium -- влияет на UX первого запуска |
+| OQ-ARCH-01 | Z.ai endpoint -- верифицирован (RESOLVED) | Решён | Low -- Z.ai endpoint: `https://api.z.ai/api/paas/v4`, модель `glm-5` |
 | OQ-ARCH-02 | Требуется ли поддержка русского языка для STT/TTS в MVP? | Открыт | Low -- whisper.cpp + Piper поддерживают RU |
 | OQ-ARCH-03 | Как управлять Python microservice (venv vs Poetry, версия Python)? | Открыт | Medium -- влияет на деплой |
 | OQ-ARCH-04 | Медиа в Telegram mirror: размер лимиты, формат конвертации, кэширование? | Открыт | Medium -- влияет на UX mirror |

@@ -439,15 +439,16 @@ osaI v3 -- локально работающий AI-ассистент с пол
 
 ### FR-028: Z.ai Provider Compatibility
 
-**Описание:** Система должна поддерживать Z.ai как primary LLM-провайдер через OpenAI-совместимый API, с configurable base URL.
+**Описание:** Система должна поддерживать Z.ai как primary LLM-провайдер через OpenAI-совместимый API. Z.ai верифицирован (2026-03-30): endpoint `https://api.z.ai/api/paas/v4`, модель `glm-5`, streaming, Bearer auth, tool calling.
 
-**Обоснование:** ANALYSIS.md, раздел 6.1 (R1: Z.ai не найден); SPEC, раздел 13.2. Поскольку Z.ai использует OpenAI-совместимый API, требование может быть удовлетворено через конфигурируемый OpenAI adapter.
+**Обоснование:** ANALYSIS.md, раздел 6.1 (R1: Z.ai верифицирован); SPEC, раздел 13.2; документация Z.ai: https://docs.z.ai/api-reference/introduction. Z.ai использует OpenAI-совместимый API, работает через OpenAI Node.js SDK с кастомным `baseURL`.
 
 **Критерии приёмки:**
-- [ ] AC-028-1: Z.ai provider использует OpenAI-совместимый API adapter с configurable base URL
-- [ ] AC-028-2: Если Z.ai не существует -- пользователь может указать любой OpenAI-совместимый endpoint
+- [ ] AC-028-1: Z.ai provider использует endpoint `https://api.z.ai/api/paas/v4` и модель `glm-5` по умолчанию
+- [ ] AC-028-2: Z.ai provider работает через OpenAI Node.js SDK с `baseURL: "https://api.z.ai/api/paas/v4/"`
 - [ ] AC-028-3: Поддерживаются: model inference, streaming, tool/function calling
-- [ ] AC-028-4: Auth: API key через конфигурацию
+- [ ] AC-028-4: Auth: API key (Bearer) через конфигурацию
+- [ ] AC-028-5: Base URL конфигурируемый (для совместимости с другими OpenAI-совместимыми провайдерами)
 
 ---
 
@@ -696,7 +697,7 @@ osaI v3 -- локально работающий AI-ассистент с пол
 | # | Предположение | Уровень доверия | Влияние при ошибке |
 |---|---|---|---|
 | AS-01 | OpenClaw upstream НЕ существует как реальный проект (верифицировано ANALYSIS.md) | **85%** | Core система должна разрабатываться самостоятельно. Стратегия форка заменяется на самостоятельную разработку с совместимым API |
-| AS-02 | Z.ai НЕ существует как реальный LLM-провайдер (верифицировано ANALYSIS.md) | **85%** | Z.ai provider реализуется как OpenAI-совместимый adapter с configurable base URL. Пользователь может указать любой OpenAI-совместимый endpoint (OpenRouter, Groq и т.д.) |
+| AS-02 | Z.ai ВЕРИФИЦИРОВАН как реальный LLM-провайдер (2026-03-30) | **90%** | Z.ai существует: endpoint `https://api.z.ai/api/paas/v4`, модель `glm-5`, OpenAI-совместимый API. Остаточный риск: стабильность API в продакшн. Failover chain обеспечивает автоматическое переключение при недоступности |
 | AS-03 | Ollama НЕ поддерживает STT/TTS напрямую (верифицировано ANALYSIS.md) | **95%** | Voice stack использует whisper.cpp + Piper TTS как отдельные процессы через child_process. Ollama используется только для LLM и embeddings |
 | AS-04 | Qdrant НЕ имеет embedded mode для Node.js (верифицировано ANALYSIS.md) | **95%** | Primary vector storage -- sqlite-vec (embedded). Qdrant -- optional external server через REST client |
 | AS-05 | Yandex Foundation Models API доступен и включает LLM + Embeddings + STT/TTS | **80%** | При недоступности Yandex -- удаление из failover chain. Cloud voice fallback недоступен |
@@ -722,7 +723,7 @@ osaI v3 -- локально работающий AI-ассистент с пол
 
 | # | Вопрос | Статус | Примечание |
 |---|---|---|---|
-| OQ-01 | Какой конкретный OpenAI-совместимый endpoint использовать как Z.ai placeholder? | Открыт | Требуется решение архитектора. Варианты: OpenRouter, Groq, Fireworks AI, или любой custom endpoint |
+| OQ-01 | Z.ai endpoint -- верифицирован (RESOLVED) | Решён | Z.ai endpoint: `https://api.z.ai/api/paas/v4`, модель: `glm-5`. Base URL конфигурируемый для совместимости |
 | OQ-02 | Требуется ли поддержка русского языка для STT/TTS в MVP? | Открыт | Whisper.cpp поддерживает RU. Piper TTS имеет модели для RU. Yandex SpeechKit -- RU + EN нативно |
 | OQ-03 | Какие конкретные модели Ollama использовать по умолчанию для LLM? | Открыт | Спецификация указывает "llama3", но не конкретную версию. Требуется выбор: llama3, llama3.1, llama3.2, mistral, qwen |
 | OQ-04 | Как управлять Python microservice для Telethon (версия Python, venv, lifecycle)? | Открыт | Требуется решение: Python 3.11+/3.12+, venv/pip, stdio/HTTP bridge, health check |
@@ -741,7 +742,7 @@ osaI v3 -- локально работающий AI-ассистент с пол
 | "Ollama Whisper" для STT | Ollama НЕ поддерживает Whisper | FR-017: whisper.cpp как отдельный процесс |
 | "Ollama Piper TTS" для TTS | Ollama НЕ поддерживает Piper | FR-018: Piper TTS как отдельный процесс |
 | "Qdrant embedded" для Node.js | Qdrant НЕ имеет embedded mode | FR-010: sqlite-vec primary, Qdrant optional |
-| "Z.ai primary LLM" | Z.ai НЕ найден | FR-028: OpenAI-совместимый adapter с configurable URL |
+| "Z.ai primary LLM" | Z.ai ВЕРИФИЦИРОВАН (endpoint: `https://api.z.ai/api/paas/v4`, модель: `glm-5`) | FR-028: Z.ai как primary с OpenAI-совместимым adapter |
 | "OpenClaw 100k+ stars" | OpenClaw НЕ найден | FR-027: условная совместимость, самостоятельная разработка |
 
 ---
