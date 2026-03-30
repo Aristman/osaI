@@ -17,6 +17,19 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "@osai/providers": "workspace:*",
+    "@osai/memory": "workspace:*",
+    "@osai/shared": "workspace:*",
+    "@osai/observability": "workspace:*",
+    "@osai/skills-core": "workspace:*",
+    "pino": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.8.0"
+  },
   "engines": {
     "node": ">=22.16.0"
   }
