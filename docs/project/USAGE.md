@@ -388,6 +388,49 @@ Userbot работает как Python microservice через child_process. Se
 
 ---
 
+## Docker
+
+### Сервисы
+
+| Сервис | Порт | Назначение |
+|---|---|---|
+| ollama | 11434 | Локальный LLM (llama3) + эмбеддинги (nomic-embed-text) |
+| qdrant | 6333 | Векторная БД (опционально, альтернатива sqlite-vec) |
+| gateway | 18789 | osai WebSocket сервер + Agent Runtime |
+
+### Команды
+
+```bash
+pnpm docker:build     # Собрать образ gateway
+pnpm docker:up       # Запустить все сервисы (ollama + qdrant + gateway)
+pnpm docker:setup    # Загрузить модели LLM (llama3, nomic-embed-text)
+pnpm docker:logs     # Логи gateway
+pnpm docker:down     # Остановить сервисы
+pnpm docker:clean    # Остановить + удалить volumes (сброс данных)
+```
+
+### Первый запуск
+
+```bash
+# 1. Убедитесь что Docker Desktop запущен
+# 2. Собрать и запустить
+pnpm docker:build
+pnpm docker:up
+
+# 3. Загрузить модели (один раз, ~8 ГБ)
+pnpm docker:setup
+
+# 4. Инициализация конфигурации (локально)
+pnpm --filter @osai/cli init
+
+# 5. Запуск CLI (локально, подключается к gateway в Docker)
+pnpm --filter @osai/cli start
+```
+
+Данные сервисов хранятся в Docker volumes: `ollama-data`, `qdrant-data`, `osai-data`. Для GPU passthrough раскомментируйте блок `deploy.resources` в `docker-compose.yml`.
+
+---
+
 ## Troubleshooting
 
 ### Сборка
