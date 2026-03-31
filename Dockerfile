@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy workspace config first (better layer caching)
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY pnpm-workspace.yaml package.json ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/providers/package.json packages/providers/
 COPY packages/observability/package.json packages/observability/
@@ -25,13 +25,26 @@ COPY packages/skills-osai/package.json packages/skills-osai/
 COPY packages/os-integration/package.json packages/os-integration/
 COPY packages/voice/package.json packages/voice/
 
-RUN pnpm install --frozen-lockfile
+# Install deps (no --frozen-lockfile: lockfile may be platform-specific)
+RUN pnpm install
 
 # Copy source and build
 COPY tsconfig.json tsconfig.base.json ./
 COPY packages/ ./packages/
 
-RUN pnpm build
+# Build packages in dependency order
+RUN pnpm -C packages/shared build && \
+    pnpm -C packages/providers build && \
+    pnpm -C packages/observability build && \
+    pnpm -C packages/memory build && \
+    pnpm -C packages/knowledge-base build && \
+    pnpm -C packages/skills-core build && \
+    pnpm -C packages/agent build && \
+    pnpm -C packages/gateway build && \
+    pnpm -C packages/cli build && \
+    pnpm -C packages/skills-osai build && \
+    pnpm -C packages/os-integration build && \
+    pnpm -C packages/voice build
 
 # ─── Runtime stage ────────────────────────────────────────────
 FROM node:22-bookworm-slim
@@ -73,7 +86,7 @@ COPY --from=builder /app/packages/voice/package.json /app/packages/voice/package
 
 # Install production dependencies only
 RUN corepack enable && corepack prepare pnpm@9 --activate \
-    && pnpm install --frozen-lockfile --prod
+    && pnpm install --prod
 
 EXPOSE 18789
 
