@@ -10,27 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy workspace config first (better layer caching)
-COPY pnpm-workspace.yaml package.json ./
-COPY packages/shared/package.json packages/shared/
-COPY packages/providers/package.json packages/providers/
-COPY packages/observability/package.json packages/observability/
-COPY packages/memory/package.json packages/memory/
-COPY packages/knowledge-base/package.json packages/knowledge-base/
-COPY packages/skills-core/package.json packages/skills-core/
-COPY packages/agent/package.json packages/agent/
-COPY packages/gateway/package.json packages/gateway/
-COPY packages/cli/package.json packages/cli/
-COPY packages/skills-osai/package.json packages/skills-osai/
-COPY packages/os-integration/package.json packages/os-integration/
-COPY packages/voice/package.json packages/voice/
+# Copy entire project (lockfile is platform-specific, will be regenerated)
+COPY . .
 
-# Install deps (no --frozen-lockfile: lockfile may be platform-specific)
+# Install all dependencies for all workspace packages
 RUN pnpm install
-
-# Copy source and build
-COPY tsconfig.json tsconfig.base.json ./
-COPY packages/ ./packages/
 
 # Build packages in dependency order
 RUN pnpm -C packages/shared build && \
