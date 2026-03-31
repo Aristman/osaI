@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
+    "start": "node ./dist/start.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
