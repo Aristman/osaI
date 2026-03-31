@@ -1,0 +1,79 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: osai-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    # GPU passthrough (uncomment if available):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: osai-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6333/collections || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: osai-gateway
+    ports:
+      - "18789:18789"
+    volumes:
+      - osai-data:/root/.osai
+    depends_on:
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    restart: unless-stopped
+    command: ["node", "packages/gateway/dist/start.js"]
+
+  # One-time model pull (run once after docker compose up)
+  ollama-pull:
+    image: ollama/ollama:latest
+    container_name: osai-ollama-pull
+    profiles: ["setup"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama-data:/root/.ollama
+    entrypoint: >
+      sh -c "
+        ollama pull llama3 &&
+        ollama pull nomic-embed-text &&
+        echo 'Models pulled successfully'
+      "
+    restart: "no"
+
+volumes:
+  ollama-data:
+  qdrant-data:
+  osai-data:

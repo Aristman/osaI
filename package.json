@@ -18,7 +18,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f gateway",
+    "docker:setup": "docker compose --profile setup up ollama-pull",
+    "docker:clean": "docker compose down -v"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.80.0",

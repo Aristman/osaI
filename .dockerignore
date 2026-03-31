@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+.osai
+.git
+.gitignore
+*.tsbuildinfo
+*.md
+tests/
+docs/
+.github/
+.tmp
+tmp/
+temp/
+.env
+.env.*
