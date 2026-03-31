@@ -7,18 +7,17 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     restart: unless-stopped
-    # GPU passthrough (uncomment if available):
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:11434/api/tags -O /dev/null || exit 1"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
       start_period: 30s
 
@@ -32,11 +31,11 @@ services:
       - qdrant-data:/qdrant/storage
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:6333/collections || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:6333/collections -O /dev/null || exit 1"]
       interval: 15s
-      timeout: 5s
+      timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
   gateway:
     build:
