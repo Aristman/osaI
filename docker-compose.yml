@@ -15,7 +15,7 @@ services:
               count: all
               capabilities: [gpu]
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:11434/api/tags -O /dev/null || exit 1"]
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:11434/api/tags').then(r=>r.ok?0:1).catch(()=>1)\""]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -31,7 +31,7 @@ services:
       - qdrant-data:/qdrant/storage
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:6333/collections -O /dev/null || exit 1"]
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:6333/collections').then(r=>r.ok?0:1).catch(()=>1)\""]
       interval: 15s
       timeout: 10s
       retries: 3
