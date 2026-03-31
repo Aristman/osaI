@@ -78,9 +78,9 @@ describe("Command: osai config", () => {
     const content = fs.readFileSync(configPath, "utf-8");
     const parsed = JSON.parse(content);
 
-    expect(parsed.version).toBe(DEFAULT_CONFIG.version);
-    expect(parsed.gateway.wsUrl).toBe("ws://127.0.0.1:18789");
-    expect(parsed.providers.primary).toBe("z-ai");
+    expect(parsed.agent.model).toBe(DEFAULT_CONFIG.agent.model);
+    expect(parsed.providers["z-ai"].model).toBe("glm-5");
+    expect(parsed.security.sandbox).toBeDefined();
   });
 
   it("TT-005-04: should output valid JSON structure", () => {
@@ -90,12 +90,12 @@ describe("Command: osai config", () => {
     expect(() => JSON.parse(configJson)).not.toThrow();
 
     const parsed = JSON.parse(configJson);
-    expect(parsed).toHaveProperty("version");
-    expect(parsed).toHaveProperty("gateway");
+    expect(parsed).toHaveProperty("agent");
     expect(parsed).toHaveProperty("providers");
     expect(parsed).toHaveProperty("channels");
     expect(parsed).toHaveProperty("memory");
-    expect(parsed).toHaveProperty("logging");
+    expect(parsed).toHaveProperty("security");
+    expect(parsed).toHaveProperty("skills");
   });
 
   it("should include --path option for showing config file path", async () => {

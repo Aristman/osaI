@@ -28,31 +28,38 @@ describe("Config utilities", () => {
   });
 
   describe("DEFAULT_CONFIG", () => {
-    it("should have version field", () => {
-      expect(DEFAULT_CONFIG.version).toBeDefined();
-      expect(typeof DEFAULT_CONFIG.version).toBe("string");
+    it("should have agent config with default model", () => {
+      expect(DEFAULT_CONFIG.agent).toBeDefined();
+      expect(DEFAULT_CONFIG.agent.model).toBe("z-ai/z-best");
     });
 
-    it("should have gateway config with default URL", () => {
-      expect(DEFAULT_CONFIG.gateway).toBeDefined();
-      expect(DEFAULT_CONFIG.gateway.wsUrl).toBe("ws://127.0.0.1:18789");
-    });
-
-    it("should have providers config", () => {
+    it("should have providers config with all providers", () => {
       expect(DEFAULT_CONFIG.providers).toBeDefined();
-      expect(DEFAULT_CONFIG.providers.primary).toBe("z-ai");
+      expect(DEFAULT_CONFIG.providers["z-ai"]).toBeDefined();
+      expect(DEFAULT_CONFIG.providers.ollama).toBeDefined();
+    });
+
+    it("should have security config", () => {
+      expect(DEFAULT_CONFIG.security).toBeDefined();
+      expect(DEFAULT_CONFIG.security.sandbox).toBeDefined();
+      expect(DEFAULT_CONFIG.security.shell).toBeDefined();
+    });
+
+    it("should have skills config", () => {
+      expect(DEFAULT_CONFIG.skills).toBeDefined();
+      expect(DEFAULT_CONFIG.skills.allowBundled).toBe(true);
+      expect(DEFAULT_CONFIG.skills.entries.filesystem.enabled).toBe(true);
     });
   });
 
   describe("writeConfig / readConfig", () => {
     it("should write and read config", () => {
       const configPath = path.join(tempDir, "osai.json");
-      const config = { ...DEFAULT_CONFIG, version: "3.0.0-test" };
 
-      writeConfig(config, configPath);
+      writeConfig(DEFAULT_CONFIG, configPath);
       const read = readConfig(configPath);
 
-      expect(read.version).toBe("3.0.0-test");
+      expect(read.agent.model).toBe(DEFAULT_CONFIG.agent.model);
     });
 
     it("should write valid JSON", () => {

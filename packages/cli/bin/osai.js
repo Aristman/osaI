@@ -129,7 +129,7 @@ if (command && !command.startsWith("-") && !knownCommands.has(command)) {
   const subcommand = args[1];
   if (subcommand === "list") {
     const limitIdx = args.indexOf("--limit");
-    const limit = limitIdx !== -1 && args[limitIdx + 1] ? parseInt(args[limitIdx + 1]!, 10) : undefined;
+    const limit = limitIdx !== -1 && args[limitIdx + 1] ? parseInt(args[limitIdx + 1], 10) : undefined;
     const { runSessionList } = await import("../dist/commands/session/list.js");
     runSessionList({ limit });
   } else if (subcommand === "resume") {
@@ -156,7 +156,7 @@ if (command && !command.startsWith("-") && !knownCommands.has(command)) {
   if (subcommand === "search") {
     const query = args[2];
     const limitIdx = args.indexOf("--limit");
-    const limit = limitIdx !== -1 && args[limitIdx + 1] ? parseInt(args[limitIdx + 1]!, 10) : undefined;
+    const limit = limitIdx !== -1 && args[limitIdx + 1] ? parseInt(args[limitIdx + 1], 10) : undefined;
     const { runMemorySearch } = await import("../dist/commands/memory/search.js");
     runMemorySearch(query, { limit });
   } else {

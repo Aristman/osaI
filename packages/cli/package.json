@@ -14,6 +14,9 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
+    "start": "node ./bin/osai.js",
+    "init": "node ./bin/osai.js init",
+    "status": "node ./bin/osai.js status",
     "test": "vitest run",
     "test:watch": "vitest"
   },

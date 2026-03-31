@@ -7,6 +7,9 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
+  "references": [
+    { "path": "../gateway" }
+  ],
   "include": ["src"],
   "exclude": ["**/__tests__/**", "**/*.test.ts"]
 }

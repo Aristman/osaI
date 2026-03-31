@@ -3,11 +3,14 @@
  *
  * Helpers for reading, writing, and validating osai.json configuration.
  * Config path: ~/.osai/osai.json
+ *
+ * Default config is imported from @osai/gateway to avoid duplication.
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import { DEFAULT_CONFIG as GATEWAY_DEFAULT_CONFIG, type OsaiConfig as GatewayOsaiConfig } from "@osai/gateway";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -19,47 +22,15 @@ export const OSAI_HOME = path.join(os.homedir(), ".osai");
 /** Default config file path */
 export const DEFAULT_CONFIG_PATH = path.join(OSAI_HOME, "osai.json");
 
-/** Default configuration content */
-export const DEFAULT_CONFIG: OsaiConfig = {
-  version: "3.0.0",
-  gateway: {
-    host: "127.0.0.1",
-    port: 18789,
-    wsUrl: "ws://127.0.0.1:18789",
-  },
-  channels: {
-    telegram: {
-      enabled: false,
-    },
-  },
-  memory: {
-    tier2_provider: "sqlite-vec",
-  },
-  providers: {
-    primary: "z-ai",
-    failover: ["yandex", "anthropic", "openai", "ollama"],
-  },
-  logging: {
-    level: "info",
-  },
-};
+/** Default configuration content (single source of truth from gateway) */
+export const DEFAULT_CONFIG = GATEWAY_DEFAULT_CONFIG;
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export interface OsaiConfig {
-  version: string;
-  gateway: {
-    host: string;
-    port: number;
-    wsUrl: string;
-  };
-  channels: Record<string, unknown>;
-  memory: Record<string, unknown>;
-  providers: Record<string, unknown>;
-  logging: Record<string, unknown>;
-}
+/** Re-export OsaiConfig from gateway (single source of truth) */
+export type OsaiConfig = GatewayOsaiConfig;
 
 // ---------------------------------------------------------------------------
 // Config operations
@@ -92,7 +63,8 @@ export function readConfig(configPath?: string): OsaiConfig {
  * @param config - Configuration object
  * @param configPath - Path to config file (default: ~/.osai/osai.json)
  */
-export function writeConfig(config: OsaiConfig, configPath?: string): void {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function writeConfig(config: any, configPath?: string): void {
   const filePath = configPath ?? DEFAULT_CONFIG_PATH;
   const dir = path.dirname(filePath);
 

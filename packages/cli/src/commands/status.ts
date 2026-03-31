@@ -82,9 +82,9 @@ async function collectStatus(options: StatusOptions): Promise<SystemStatus> {
   let configVersion: string | undefined;
 
   try {
-    const config = readConfig();
+    readConfig();
     configLoaded = true;
-    configVersion = config.version;
+    configVersion = "3.0.0";
   } catch {
     // Config not found or invalid
   }

@@ -46,8 +46,8 @@ describe("Command: osai init", () => {
       expect(fs.existsSync(path.join(osaiDir, "channels", "telegram", "session"))).toBe(true);
 
       const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-      expect(config.version).toBe(DEFAULT_CONFIG.version);
-      expect(config.gateway.wsUrl).toBe("ws://127.0.0.1:18789");
+      expect(config.agent.model).toBe(DEFAULT_CONFIG.agent.model);
+      expect(config.providers["z-ai"].type).toBe("openai-compat");
     });
 
     it("should create default config with correct structure", () => {
@@ -59,13 +59,15 @@ describe("Command: osai init", () => {
 
       const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
-      expect(config).toHaveProperty("version");
-      expect(config).toHaveProperty("gateway");
+      expect(config).toHaveProperty("agent");
       expect(config).toHaveProperty("providers");
       expect(config).toHaveProperty("channels");
       expect(config).toHaveProperty("memory");
-      expect(config).toHaveProperty("logging");
-      expect(config.providers.primary).toBe("z-ai");
+      expect(config).toHaveProperty("security");
+      expect(config).toHaveProperty("skills");
+      expect(config).toHaveProperty("voice");
+      expect(config.providers["z-ai"]).toBeDefined();
+      expect(config.providers.ollama).toBeDefined();
     });
   });
 
