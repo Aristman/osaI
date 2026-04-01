@@ -25,6 +25,7 @@ function createOllamaProvider(config: OsaiConfig, entryModel?: string): LLMProvi
   if (!pc) return null;
 
   const baseUrl = process.env.OLLAMA_BASE_URL ?? pc.baseUrl ?? "http://localhost:11434";
+  const callTimeout = config.agent.callTimeoutMs ?? 120_000;
 
   return new OllamaProvider({
     id: "ollama",
@@ -32,6 +33,7 @@ function createOllamaProvider(config: OsaiConfig, entryModel?: string): LLMProvi
     baseUrl,
     defaultModel: entryModel ?? pc.model ?? "llama3",
     apiKeys: [],
+    timeoutMs: callTimeout,
   });
 }
 
@@ -198,7 +200,7 @@ export function createProviderChain(
   }
 
   return new ProviderChain(providers, {
-    callTimeoutMs: 60_000,
+    callTimeoutMs: config.agent.callTimeoutMs ?? 120_000,
     circuitBreaker: {
       failureThreshold: config.agent.circuitBreaker.failureThreshold,
       resetTimeoutMs: config.agent.circuitBreaker.resetTimeoutMs,

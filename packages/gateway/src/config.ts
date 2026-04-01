@@ -90,6 +90,7 @@ export const osaiConfigSchema = z.object({
   agent: z.object({
     model: z.string(),
     failoverChain: z.array(z.string()),
+    callTimeoutMs: z.number().optional(),
     circuitBreaker: z.object({
       failureThreshold: z.number(),
       resetTimeoutMs: z.number(),
@@ -153,6 +154,7 @@ export const clientConfigPushSchema = z.object({
   agent: z.object({
     model: z.string(),
     failoverChain: z.array(z.string()),
+    callTimeoutMs: z.number().optional(),
     circuitBreaker: z.object({
       failureThreshold: z.number(),
       resetTimeoutMs: z.number(),
@@ -230,6 +232,7 @@ export function getConfigPath(): string {
 export const DEFAULT_CONFIG = {
   agent: {
     model: "z-ai/glm-5-turbo",
+    callTimeoutMs: 120_000,
     failoverChain: [
       "z-ai/glm-5-turbo",
       "yandex/yandexgpt-pro",
