@@ -39,10 +39,25 @@ function createZAiProvider(config: OsaiConfig, entryModel?: string): LLMProvider
   const pc = config.providers["z-ai"];
   if (!pc || !pc.apiKey || isPlaceholderKey(pc.apiKey)) return null;
 
+  const baseUrl = pc.baseUrl ?? "https://api.z.ai/api/paas/v4";
+
+  // When z-ai is configured with an Anthropic-compatible endpoint,
+  // use AnthropicProvider (Anthropic SDK) instead of ZAiProvider (OpenAI SDK).
+  // Z.ai Anthropic-compatible models: glm-4.5-air (haiku), glm-4.7 (sonnet/opus)
+  if (baseUrl.includes("/anthropic")) {
+    return new AnthropicProvider({
+      id: "z-ai",
+      name: "Z.ai (Anthropic)",
+      baseUrl,
+      defaultModel: entryModel ?? pc.model ?? "glm-4.7",
+      apiKeys: [pc.apiKey],
+    });
+  }
+
   return new ZAiProvider({
     id: "z-ai",
     name: "Z.ai",
-    baseUrl: pc.baseUrl ?? "https://api.z.ai/api/paas/v4",
+    baseUrl,
     defaultModel: entryModel ?? pc.model ?? "glm-5",
     apiKeys: [pc.apiKey],
   });
