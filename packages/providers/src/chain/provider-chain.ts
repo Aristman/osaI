@@ -165,6 +165,10 @@ export class ProviderChain {
     this._callTimeoutMs = config?.callTimeoutMs ?? DEFAULT_CALL_TIMEOUT_MS;
     this._logger = config?.logger ?? noopLogger;
     this._authKeys = config?.authKeys ?? {};
+    this.id = 'provider-chain';
+    this.name = providers.length > 0
+      ? `ProviderChain(${providers.map((p) => p.id).join(', ')})`
+      : 'ProviderChain(empty)';
 
     this._entries = providers.map((provider) => {
       const cbConfig: CircuitBreakerConfig | undefined = config?.circuitBreaker;
@@ -179,6 +183,59 @@ export class ProviderChain {
         authRotator: new AuthRotator(rotationConfig),
       };
     });
+  }
+
+  // -- LLMProvider interface (for InferenceService compatibility) -----------
+
+  readonly id: string;
+  readonly name: string;
+
+  /**
+   * LLMProvider.complete() -- delegates to execute() with failover.
+   * This allows ProviderChain to be passed to InferenceService directly.
+   */
+  complete(request: LLMRequest): Promise<LLMResponse> {
+    return this.execute(request);
+  }
+
+  /**
+   * LLMProvider.stream() -- delegates to executeStream() with failover.
+   */
+  stream(request: LLMRequest): AsyncIterable<LLMChunk> {
+    return this.executeStream(request);
+  }
+
+  /**
+   * LLMProvider.isAvailable() -- at least one provider has a closed circuit breaker.
+   */
+  async isAvailable(): Promise<boolean> {
+    return this._entries.some((e) => e.circuitBreaker.canExecute());
+  }
+
+  /**
+   * LLMProvider.countTokens() -- approximate via first active provider.
+   */
+  countTokens(text: string): number {
+    const active = this.getActiveProvider();
+    return active ? active.countTokens(text) : Math.ceil(text.length / 4);
+  }
+
+  /**
+   * LLMProvider.status -- returns 'available' if any provider is up.
+   */
+  get status(): string {
+    return this._entries.some((e) => e.circuitBreaker.canExecute())
+      ? 'available'
+      : 'unavailable';
+  }
+
+  /**
+   * LLMProvider.getStatus() -- returns ProviderStatus.
+   */
+  getStatus(): ProviderStatus {
+    return this._entries.some((e) => e.circuitBreaker.canExecute())
+      ? ProviderStatus.Available
+      : ProviderStatus.Unavailable;
   }
 
   // -- Public API -----------------------------------------------------------
@@ -376,7 +433,7 @@ export class ProviderChain {
    *
    * @returns Array of status entries for each provider.
    */
-  getStatus(): ProviderChainEntryStatus[] {
+  getChainStatus(): ProviderChainEntryStatus[] {
     return this._entries.map((entry) => {
       const stats = entry.circuitBreaker.getStats();
       return {

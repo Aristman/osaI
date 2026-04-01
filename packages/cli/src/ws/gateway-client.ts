@@ -21,7 +21,7 @@ import pino from "pino";
 // ---------------------------------------------------------------------------
 
 /** Default Gateway address */
-const DEFAULT_GATEWAY_URL = "ws://127.0.0.1:18789";
+const DEFAULT_GATEWAY_URL = "ws://127.0.0.1:18790";
 
 /** Maximum reconnect attempts */
 const MAX_RETRIES = 3;
@@ -168,6 +168,11 @@ export class GatewayClient extends EventEmitter<GatewayClientEvents> {
 
     this.ws.on("message", (data: WebSocket.Data) => {
       this.emit("message", data);
+    });
+
+    // Respond to server heartbeat pings to avoid 1008 disconnect
+    this.ws.on("ping", () => {
+      this.ws?.pong();
     });
   }
 

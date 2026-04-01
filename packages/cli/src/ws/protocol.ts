@@ -54,12 +54,30 @@ export interface ClientSubscribe {
   payload: { events: string[] };
 }
 
+/** Push конфигурации (agent + providers) от клиента в Gateway */
+export interface ClientConfigPush {
+  type: "config.push";
+  session_id: string;
+  payload: {
+    agent: {
+      model: string;
+      failoverChain: string[];
+      circuitBreaker: {
+        failureThreshold: number;
+        resetTimeoutMs: number;
+      };
+    };
+    providers: Record<string, Record<string, unknown>>;
+  };
+}
+
 /** Union всех исходящих типов */
 export type GatewayOutgoingMessage =
   | ClientMessage
   | ClientCommand
   | ClientPermissionResponse
-  | ClientSubscribe;
+  | ClientSubscribe
+  | ClientConfigPush;
 
 // ---------------------------------------------------------------------------
 // Gateway -> Client message types
@@ -198,6 +216,31 @@ export function sendSubscribe(
     session_id: sessionId,
     ...(chatId !== undefined && { chat_id: chatId }),
     payload: { events },
+  };
+  client.send(message);
+}
+
+/**
+ * Отправляет конфигурацию клиента (agent + providers) в Gateway.
+ *
+ * @param client - Экземпляр GatewayClient с активным соединением
+ * @param sessionId - Идентификатор текущей сессии
+ * @param agentConfig - Секция agent из osai.json
+ * @param providersConfig - Секция providers из osai.json
+ */
+export function sendConfigPush(
+  client: GatewayClient,
+  sessionId: string,
+  agentConfig: ClientConfigPush["payload"]["agent"],
+  providersConfig: Record<string, Record<string, unknown>>,
+): void {
+  const message: ClientConfigPush = {
+    type: "config.push",
+    session_id: sessionId,
+    payload: {
+      agent: agentConfig,
+      providers: providersConfig,
+    },
   };
   client.send(message);
 }

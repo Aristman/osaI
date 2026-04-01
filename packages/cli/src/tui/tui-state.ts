@@ -16,7 +16,7 @@ export const initialTUIState: TUIState = {
   currentToolProgress: null,
   connectionStatus: "disconnected",
   chatName: "New Chat",
-  modelName: "glm-5",
+  modelName: "z-ai/z-best",
   sessionId: "",
   chatId: "",
   isStreaming: false,

@@ -19,6 +19,8 @@ export enum MessageType {
   CHAT_DELETE = "CHAT_DELETE",
   CHAT_ARCHIVE = "CHAT_ARCHIVE",
   STATE = "STATE",
+  CONFIG_PUSH = "config.push",
+  CONFIG_ACK = "config.ack",
 }
 
 // ---------------------------------------------------------------------------

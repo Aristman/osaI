@@ -232,7 +232,7 @@ export class InferenceService {
       input.stopSequences;
 
     const request: LLMRequest = {
-      model,
+      ...(model !== 'default' ? { model } : {}),
       messages,
       stream: false,
     };

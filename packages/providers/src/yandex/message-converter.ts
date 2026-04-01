@@ -192,7 +192,7 @@ export function fromYandexResponse(
   return {
     content,
     usage,
-    model: request.model,
+    model: request.model ?? 'yandexgpt-pro',
     provider: 'yandex',
     finishReason,
   };

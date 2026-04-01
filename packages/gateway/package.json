@@ -26,6 +26,8 @@
     "node": ">=22.16.0"
   },
   "dependencies": {
+    "@osai/agent": "workspace:*",
+    "@osai/providers": "workspace:*",
     "@osai/shared": "workspace:*",
     "better-sqlite3": "^12.8.0",
     "grammy": "^1.41.1",

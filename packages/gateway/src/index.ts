@@ -10,8 +10,18 @@ export {
 } from "./init.js";
 
 export {
-  // Error class
-  ConfigError,
+  // GatewayApp (main composition)
+  GatewayApp,
+} from "./app.js";
+
+export {
+  // Client session management
+  createClientSession,
+  disposeClientSession,
+  type ClientSession,
+} from "./client-session.js";
+
+export {
   // Zod schema and type
   osaiConfigSchema,
   type OsaiConfig,

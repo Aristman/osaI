@@ -38,10 +38,37 @@ export interface MessageRouterOptions {
   logger?: pino.Logger;
 }
 
+/** Gateway event message (system events like connect.challenge) */
+export interface GatewayEventMessage {
+  type: "event";
+  event: string;
+  payload: Record<string, unknown>;
+}
+
+/** Handler для gateway event сообщений */
+export type GatewayEventHandler = (msg: GatewayEventMessage) => void;
+
+/** config.ack сообщение от Gateway */
+export interface ConfigAckMessage {
+  type: "config.ack";
+  session_id: string;
+  payload: {
+    status: "ok" | "error";
+    providersLoaded?: number;
+    model?: string;
+    error?: string;
+  };
+}
+
+/** Handler для config_ack сообщений */
+export type ConfigAckHandler = (msg: ConfigAckMessage) => void;
+
 export type MessageRouterEvents = {
   tool_stream: [msg: ToolStreamMessage];
   block: [msg: BlockStreamMessage];
   permission_request: [msg: PermissionRequestMessage];
+  event: [msg: GatewayEventMessage];
+  config_ack: [msg: ConfigAckMessage];
   error: [raw: string, error: Error];
 };
 
@@ -145,6 +172,31 @@ export class MessageRouter extends EventEmitter<MessageRouterEvents> {
       case "permission_request": {
         const msg = parsed as unknown as PermissionRequestMessage;
         this.emit("permission_request", msg);
+        break;
+      }
+
+      case "event": {
+        const msg = parsed as unknown as GatewayEventMessage;
+        this.logger.debug({ event: msg.event }, "Gateway event received");
+        this.emit("event", msg);
+        break;
+      }
+
+      case "config.ack": {
+        const msg = parsed as unknown as ConfigAckMessage;
+        const status = msg.payload?.status;
+        if (status === "ok") {
+          this.logger.info(
+            { providers: msg.payload?.providersLoaded, model: msg.payload?.model },
+            "Config push accepted by Gateway",
+          );
+        } else {
+          this.logger.warn(
+            { error: msg.payload?.error },
+            "Config push rejected by Gateway",
+          );
+        }
+        this.emit("config_ack", msg);
         break;
       }
 

@@ -21,6 +21,7 @@
     "node": ">=22.16.0"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "openai": "^4.104.0"
   }
 }

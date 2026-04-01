@@ -109,7 +109,7 @@ export class AnthropicProvider extends BaseLLMProvider {
     const messages = toAnthropicMessages(request.messages);
 
     const params: Anthropic.MessageCreateParamsNonStreaming = {
-      model: request.model,
+      model: request.model ?? this.config.defaultModel,
       max_tokens: request.maxTokens ?? 4096,
       messages,
     };
@@ -159,7 +159,7 @@ export class AnthropicProvider extends BaseLLMProvider {
     const messages = toAnthropicMessages(request.messages);
 
     const params: Anthropic.MessageCreateParamsStreaming = {
-      model: request.model,
+      model: request.model ?? this.config.defaultModel,
       max_tokens: request.maxTokens ?? 4096,
       messages,
       stream: true,
@@ -221,7 +221,7 @@ export class AnthropicProvider extends BaseLLMProvider {
           }));
 
           const usage = event.usage
-            ? this.mapDeltaUsage(event.usage)
+            ? this.mapDeltaUsage({ input_tokens: (event.usage as unknown as { input_tokens?: number | null }).input_tokens ?? null, output_tokens: (event.usage as unknown as { output_tokens?: number }).output_tokens ?? 0 })
             : undefined;
 
           yield this.buildChunk(request, '', {

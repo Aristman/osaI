@@ -141,6 +141,58 @@ export const osaiConfigSchema = z.object({
   }),
 });
 
+// ---------------------------------------------------------------------------
+// Client config push schema (only agent + providers)
+// ---------------------------------------------------------------------------
+
+/**
+ * Schema for config.push messages from CLI clients.
+ * Only validates the `agent` and `providers` sections needed for ProviderChain.
+ */
+export const clientConfigPushSchema = z.object({
+  agent: z.object({
+    model: z.string(),
+    failoverChain: z.array(z.string()),
+    circuitBreaker: z.object({
+      failureThreshold: z.number(),
+      resetTimeoutMs: z.number(),
+    }),
+  }),
+  providers: z.record(z.string(), providerConfigSchema),
+});
+
+export type ClientConfigPush = z.infer<typeof clientConfigPushSchema>;
+
+/**
+ * Validate a client config push payload.
+ *
+ * @returns Parsed client config on success.
+ * @throws Error with human-readable validation message on failure.
+ */
+export function validateClientConfig(payload: unknown): ClientConfigPush {
+  const result = clientConfigPushSchema.safeParse(payload);
+  if (!result.success) {
+    const firstIssue = result.error.issues[0];
+    const fieldPath = firstIssue?.path?.join(".");
+    throw new Error(
+      `Client config validation failed at '${fieldPath ?? "unknown"}': ${firstIssue?.message ?? "unknown error"}`,
+    );
+  }
+  return result.data;
+}
+
+/**
+ * Merge a client-pushed config (agent + providers) with DEFAULT_CONFIG.
+ * The client config overrides defaults; all other sections come from DEFAULT_CONFIG.
+ */
+export function mergeClientConfig(clientConfig: ClientConfigPush): OsaiConfig {
+  return osaiConfigSchema.parse({
+    ...DEFAULT_CONFIG,
+    agent: clientConfig.agent,
+    providers: clientConfig.providers,
+  });
+}
+
 // Inferred type from the Zod schema (runtime-validated config shape).
 export type OsaiConfig = z.infer<typeof osaiConfigSchema>;
 
@@ -177,9 +229,9 @@ export function getConfigPath(): string {
  */
 export const DEFAULT_CONFIG = {
   agent: {
-    model: "z-ai/z-best",
+    model: "z-ai/glm-5-turbo",
     failoverChain: [
-      "z-ai/z-best",
+      "z-ai/glm-5-turbo",
       "yandex/yandexgpt-pro",
       "anthropic/claude-opus-4-6",
       "openai/gpt-4o",

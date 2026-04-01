@@ -194,7 +194,7 @@ export class OpenAIProvider extends BaseLLMProvider {
     stream_options?: { include_usage: boolean };
   } {
     const params: Record<string, unknown> = {
-      model: request.model,
+      model: request.model ?? this.config.defaultModel,
       messages: this.mapMessages(request.messages),
     };
 

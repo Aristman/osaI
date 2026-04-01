@@ -114,7 +114,7 @@ export abstract class BaseLLMProvider implements LLMProvider {
     return {
       content,
       usage,
-      model: request.model,
+      model: request.model ?? this.config.defaultModel,
       provider: this.id,
       toolCalls: extra?.toolCalls,
       finishReason: extra?.finishReason,
@@ -136,7 +136,7 @@ export abstract class BaseLLMProvider implements LLMProvider {
   ): LLMChunk {
     return {
       content,
-      model: request.model,
+      model: request.model ?? this.config.defaultModel,
       provider: this.id,
       toolCalls: extra?.toolCalls,
       usage: extra?.usage,

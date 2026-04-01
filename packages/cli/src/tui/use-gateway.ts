@@ -3,13 +3,21 @@
  *
  * React-подобный хук для управления подключением к Gateway.
  * Предоставляет client ref и методы отправки сообщений.
+ *
+ * При подключении автоматически отправляет config.push с конфигурацией
+ * из ~/.osai/osai.json (секции agent + providers).
  */
 
 import { useEffect, useRef, useCallback } from "react";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { homedir } from "node:os";
 import pino from "pino";
 import { GatewayClient } from "../ws/gateway-client.js";
 import { MessageRouter } from "../ws/message-router.js";
-import { sendUserMessage, sendSubscribe } from "../ws/protocol.js";
+import { sendUserMessage, sendSubscribe, sendConfigPush } from "../ws/protocol.js";
+import type { ClientConfigPush } from "../ws/protocol.js";
+import type { GatewayEventMessage } from "../ws/message-router.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,6 +48,38 @@ export interface UseGatewayReturn {
 }
 
 // ---------------------------------------------------------------------------
+// Config loader
+// ---------------------------------------------------------------------------
+
+/**
+ * Reads ~/.osai/osai.json and returns the agent + providers sections.
+ * Returns null if file doesn't exist or can't be parsed.
+ */
+async function loadLocalConfig(): Promise<ClientConfigPush["payload"] | null> {
+  try {
+    const configPath = join(homedir(), ".osai", "osai.json");
+    const content = await readFile(configPath, { encoding: "utf-8" });
+    const parsed = JSON.parse(content);
+
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      typeof parsed["agent"] !== "object" ||
+      typeof parsed["providers"] !== "object"
+    ) {
+      return null;
+    }
+
+    return {
+      agent: parsed["agent"] as ClientConfigPush["payload"]["agent"],
+      providers: parsed["providers"] as Record<string, Record<string, unknown>>,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
 
@@ -48,6 +88,7 @@ export interface UseGatewayReturn {
  *
  * Создаёт GatewayClient и MessageRouter при монтировании,
  * автоматически переподключается, маршрутизирует входящие сообщения.
+ * При подключении отправляет config.push с локальной конфигурацией.
  */
 export function useGateway(options: UseGatewayOptions): UseGatewayReturn {
   const {
@@ -80,11 +121,20 @@ export function useGateway(options: UseGatewayOptions): UseGatewayReturn {
     routerRef.current = router;
 
     // Connection lifecycle handlers
-    const onConnected = () => {
+    const onConnected = async () => {
       statusRef.current = "connected";
       onConnectionStatusChange?.("connected");
       try {
         sendSubscribe(client, sessionId, ["tool_stream", "block"]);
+
+        // Push local config to Gateway
+        const localConfig = await loadLocalConfig();
+        if (localConfig) {
+          sendConfigPush(client, sessionId, localConfig.agent, localConfig.providers);
+          logger.info("Config push sent to Gateway");
+        } else {
+          logger.warn("No local config found, using Gateway defaults");
+        }
       } catch {
         // WS may have closed
       }
@@ -117,6 +167,41 @@ export function useGateway(options: UseGatewayOptions): UseGatewayReturn {
     if (onToolStream !== undefined) {
       router.on("tool_stream", onToolStream);
     }
+
+    // Handle gateway events (connect.challenge, etc.)
+    router.on("event", (msg: GatewayEventMessage) => {
+      if (msg.event === "connect.challenge") {
+        try {
+          client.send({
+            type: "event",
+            event: "connect.response",
+            payload: { nonce: msg.payload.nonce },
+          });
+        } catch {
+          // WS may have closed
+        }
+      }
+    });
+
+    // Log config.ack results
+    router.on("config_ack", (msg) => {
+      if (msg.payload.status === "ok") {
+        logger.info(
+          { providers: msg.payload.providersLoaded, model: msg.payload.model },
+          "Gateway accepted config push",
+        );
+      } else {
+        logger.error(
+          { error: msg.payload.error },
+          "Gateway rejected config push",
+        );
+      }
+    });
+
+    // Suppress unknown-message errors — don't crash the app
+    router.on("error", (_raw, _error) => {
+      // Logged by MessageRouter itself
+    });
 
     router.attach(client);
     client.connect();

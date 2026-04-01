@@ -82,8 +82,8 @@ export interface LLMChunk {
 
 /** Configuration for a single LLM completion request. */
 export interface LLMRequest {
-  /** Model identifier (e.g. 'glm-5', 'gpt-4o'). */
-  model: string;
+  /** Model identifier (e.g. 'glm-5', 'gpt-4o'). If omitted, provider uses its defaultModel. */
+  model?: string;
   /** Ordered conversation messages. */
   messages: readonly ChatMessage[];
   /** Tools available for the LLM to call. */

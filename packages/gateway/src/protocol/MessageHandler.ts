@@ -102,7 +102,11 @@ export class MessageHandler {
     const clientMessage: ClientMessage = {
       type: msg["type"],
       id: typeof msg["id"] === "string" ? msg["id"] : undefined,
-      chatId: typeof msg["chatId"] === "string" ? msg["chatId"] : undefined,
+      chatId: typeof msg["chatId"] === "string"
+        ? msg["chatId"]
+        : typeof msg["chat_id"] === "string"
+          ? msg["chat_id"]
+          : undefined,
       payload: this.extractPayload(msg),
     };
 
